@@ -62,7 +62,7 @@ def randomForrest(train_data, correct_class, nlp):
     with parallel_backend('threading', n_jobs=os.cpu_count()):
         
         start_time = time.time()
-        rf = RandomForestClassifier(verbose=True)
+        rf = RandomForestClassifier()
         param = {
             'n_estimators': [5, 50, 250],
             'max_depth': [2, 4, 8, 16, 32, None]
@@ -81,7 +81,7 @@ def gradientBoost(train_data, correct_class, nlp):
     with parallel_backend('threading', n_jobs=os.cpu_count()):
         
         start_time = time.time()
-        gbt = GradientBoostingClassifier(verbose=True)
+        gbt = GradientBoostingClassifier()
         param = {
             'n_estimators': [5, 50, 250],
             'max_depth': [2, 4, 8, 16, 32, None],
@@ -101,7 +101,7 @@ def adaBoost(train_data, correct_class, nlp):
     log.log("\nTraining AdaBoost for {}...".format(nlp))
     with parallel_backend('threading', n_jobs=os.cpu_count()):
         start_time = time.time()
-        classifier = AdaBoostClassifier(verbose=True)
+        classifier = AdaBoostClassifier()
         param = {
             'n_estimators': [5, 50, 250],
             'learning_rate': [0.01, 0.1, 1, 10, 100]
@@ -119,7 +119,7 @@ def knn(train_data, correct_class, nlp):
     log.log("\nTraining KNN for {}...".format(nlp))
     with parallel_backend('threading', n_jobs=os.cpu_count()):
         start_time = time.time()
-        classifier = KNeighborsClassifier(verbose=True)       
+        classifier = KNeighborsClassifier()       
         param = {
             'n_neighbors': [5, 50, 250],
             'weights': ['uniform', 'distance'],
@@ -139,7 +139,7 @@ def decisionTree(train_data, correct_class, nlp):
     log.log("\nTraining Decision Tree for {}...".format(nlp))
     with parallel_backend('threading', n_jobs=os.cpu_count()):
         start_time = time.time()
-        classifier = DecisionTreeClassifier(verbose=True)
+        classifier = DecisionTreeClassifier()
         param = {
             'criterion': ['gini', 'entropy', 'log_loss'],
             'splitter': ['best', 'random']
@@ -157,7 +157,7 @@ def naiveBayes(train_data, correct_class, nlp):
     log.log("\nTraining Naive Bayes for {}...".format(nlp))
     with parallel_backend('threading', n_jobs=os.cpu_count()):
         start_time = time.time()
-        classifier = GaussianNB(verbose=True)
+        classifier = GaussianNB()
         param = {
             
         }
@@ -174,7 +174,7 @@ def xgboost(train_data, correct_class, nlp):
     log.log("\nTraining XGB for {}...".format(nlp))
     with parallel_backend('threading', n_jobs=os.cpu_count()):
         start_time = time.time()
-        classifier = XGBClassifier(verbose=True)
+        classifier = XGBClassifier()
         param = {
             'booster': ['gbtree', 'gblinear', 'dart'],
             'learning_rate': [0.01, 0.1, 1, 10, 100]
@@ -192,7 +192,7 @@ def logisticRegression(train_data, correct_class, nlp):
     log.log("\nTraining LR for {}...".format(nlp))
     with parallel_backend('threading', n_jobs=os.cpu_count()):
         start_time = time.time()
-        classifier = LinearRegression(verbose=True)
+        classifier = LinearRegression()
         param = {
             
         }
@@ -209,7 +209,7 @@ def kmeans(train_data, correct_class, nlp):
     log.log("\nTraining KM for {}...".format(nlp))
     with parallel_backend('threading', n_jobs=os.cpu_count()):
         start_time = time.time()
-        classifier = KMeans(verbose=True)
+        classifier = KMeans()
         param = {
             
         }
@@ -226,7 +226,7 @@ def nn(train_data, correct_class, nlp):
     log.log("\nTraining NN for {}...".format(nlp))
     with parallel_backend('threading', n_jobs=os.cpu_count()):
         start_time = time.time()
-        classifier = MLPClassifier(verbose=True)
+        classifier = MLPClassifier()
         param = {
             'hidden_layer_sizes': [(10,30,10),(20,)],
             'activation': ['tanh', 'relu'],
@@ -247,7 +247,7 @@ def svm(train_data, correct_class, nlp):
     log.log("\nTraining SVM for {}...".format(nlp))
     with parallel_backend('threading', n_jobs=os.cpu_count()):
         start_time = time.time()
-        classifier = SVC(verbose=True)  
+        classifier = SVC()  
         param = {
             'kernel': ['linear', 'rbg', 'sigmoid'],
             'C': [0.1, 1, 10],
