@@ -4,7 +4,7 @@ import os
 from sklearn.model_selection import train_test_split
 import pandas as pd
 from sklearn.preprocessing import LabelEncoder
-
+import log
 
 
 def splitTrainTestVal(filename):
@@ -12,12 +12,49 @@ def splitTrainTestVal(filename):
     prefix = filename[0:3]
     df = pd.read_csv(filename, index_col="Unnamed: 0")
     df = df.dropna()
+    print("\n\nNOTE: There must be a label column, it will be removed from the dataset before training.")
+    # print("Dropping columns ..")
+    # df = df.drop(columns=["SHA256", "label", "category"])
+    delete = True
+    while delete:
+        print(df.head())
+        convert = input("Do you want to "+log.Color.FAIL+"Remove "+log.Color.END + "any columns? (Y/N)?: ")
+        if convert == "Y" or convert == "y":
+            column = 0
+            for c in df.columns:
+                print(str(column) + ": " + c)
+                column += 1
+            column = input("Select column(s) to delete (e.g. 1) or multiple (e.g. 1,2,3): ")
+            if column != "":
+                i = 0
+                for c in df.columns:
+                    if str(i) in column.split(","):
+                        df = df.drop(columns=[c])
+                    i += 1
+        else:
+            delete = False
+    encode = True
+    while encode:
+        print(df.head())
+        convert = input("Do you want to "+log.Color.CYAN+"Label Encode "+log.Color.END+"any columns? (Y/N)?: ")
+        if convert == "Y" or convert == "y":
+            column = 0
+            for c in df.columns:
+                print(str(column) + ": " + c)
+                column += 1
+            column = input("Select a column(s) (e.g. 1) or multiple (e.g. 1,2,3): ")
+            if column != "":
+                i = 0
+                for c in df.columns:
+                    if str(i) in column.split(","):
+                        le = LabelEncoder()
+                        df[c] = le.fit_transform(df[c])
+                    i += 1
+        else:
+            encode = False
     labels = df["label"]
-    df = df[['name','entropy']]
-    le = LabelEncoder()
-    df['name'] = le.fit_transform(df['name'])
+    df = df.drop(columns=["label"])
     features = df.to_numpy()
-    
     
     train, test, train_labels, lab = train_test_split(features, labels, test_size=0.4, random_state=42, stratify=labels)
     validation, test_data, validation_labels, test_labels = train_test_split(test, lab, test_size=0.5, random_state=42, stratify=lab)
@@ -51,3 +88,4 @@ def stats(data, labels):
         'count': labels.value_counts()
     }
     return d
+

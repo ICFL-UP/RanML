@@ -3,27 +3,205 @@ import sys
 import log 
 from log import Color
 from optparse import OptionParser
-
+import os
 # Globals
-MODEL_LIST = ['RF','GBT', 'AB', 'KNN', 'DT', 'NB', 'XGB', 'LR', 'KM', 'NN', 'SVM']
+FILE = ""
+MODEL_LIST = ['RF','GBT', 'AB', 'KNN', 'DT', 'NB', 'LR', 'XGB', 'KM', 'NN', 'SVM']
 DATA = 0
 TRAIN = 0
 PREDICT = 0
 ROC = 0
 BEST = 0
 
-print("Welcome to RanForRed")
-if len(sys.argv[1:]) == 0:
-    print("No arguments passed, please use -h or --help for help")
-    sys.exit()
+
+def main():
+    from sklearn.metrics import RocCurveDisplay
+    import joblib
+    import matplotlib.pyplot as plt
+    import classifiers
+    import data_reader
+    import pandas as pd
+    from datetime import datetime
+    import traceback
+    from sklearn.preprocessing import LabelEncoder
+
+    prefix = FILE[0:3]
+
+    print(datetime.now())
+
+    # # STATS 
+    data = pd.read_csv(FILE)
+    log.log(prefix + " Dataset stats - Category: " + str(data["category"].value_counts()))
+    log.log(prefix + " Dataset stats - Label: \n" + str(data["label"].value_counts()))
+    log.log(prefix + " Dataset stats - Shape: " + str(data.shape))
+
+
+    if DATA:
+        log.log("Preparing data splitting ...")
+        data_reader.splitTrainTestVal(FILE) 
+
+
+    log.log("Loading data ..")
+    X = {
+        "TRAIN": joblib.load("DATA/Train/"+prefix+"_features.pkl"),
+        "VAL": joblib.load("DATA/Validation/"+prefix+"_features.pkl"),
+        "TEST": joblib.load("DATA/Test/"+prefix+"_features.pkl")
+    }
+    Y = {
+        "TRAIN": joblib.load("DATA/Train/"+prefix+"_labels.pkl"),
+        "VAL": joblib.load("DATA/Validation/"+prefix+"_labels.pkl"),
+        "TEST": joblib.load("DATA/Test/"+prefix+"_labels.pkl")
+    }
+
+    
+    log.log("Dataset TRAIN Y: \n" + str(Y["TRAIN"].value_counts()))
+    log.log("Dataset VAL Y: \n" + str(Y["VAL"].value_counts()))
+    log.log("Dataset TEST Y: \n" + str(Y["TEST"].value_counts()))
+
+
+    if TRAIN:
+        # Classifier Training
+        log.log("\n\nTraining Classifiers ...")
+        if "RF" in MODEL_LIST:
+            try:
+                classifiers.randomForrest(X["TRAIN"], Y["TRAIN"], prefix)
+            except:
+                print(traceback.print_exc())
+                log.log("\n\n\n\n\nERROR in training of RF\n\n\n\n")
+        
+        if "GBT" in MODEL_LIST:
+            try:
+                classifiers.gradientBoost(X["TRAIN"], Y["TRAIN"], prefix)
+            except:
+                print(traceback.print_exc())   
+                log.log("\n\n\n\n\nERROR in training of DT\n\n\n\n")
+
+        if "AB" in MODEL_LIST:
+            try:
+                classifiers.adaBoost(X["TRAIN"], Y["TRAIN"], prefix)
+            except:
+                print(traceback.print_exc())
+                log.log("\n\n\n\n\nERROR in training of AB\n\n\n\n")
+        
+        if "KNN" in MODEL_LIST:
+            try:
+                classifiers.knn(X["TRAIN"], Y["TRAIN"], prefix)
+            except:
+                print(traceback.print_exc())
+                log.log("\n\n\n\n\nERROR in training of KNN\n\n\n\n")
+
+        if "DT" in MODEL_LIST:
+            try:
+                classifiers.decisionTree(X["TRAIN"], Y["TRAIN"], prefix)
+            except:
+                print(traceback.print_exc())   
+                log.log("\n\n\n\n\nERROR in training of DT\n\n\n\n")
+
+        if "NB" in MODEL_LIST:
+            try:
+                le = LabelEncoder()
+                y_train = le.fit_transform(Y["TRAIN"])
+                classifiers.naiveBayes(X["TRAIN"], y_train, prefix)
+            except:
+                print(traceback.print_exc())   
+                log.log("\n\n\n\n\nERROR in training of NB\n\n\n\n")
+
+        if "XGB" in MODEL_LIST:
+            try:
+                le = LabelEncoder()
+                y_train = le.fit_transform(Y["TRAIN"])
+                classifiers.xgboost(X["TRAIN"], y_train, prefix)
+            except:
+                print(traceback.print_exc())   
+                log.log("\n\n\n\n\nERROR in training of XGB\n\n\n\n")
+        
+        if "LR" in MODEL_LIST:
+            try:
+                le = LabelEncoder()
+                y_train = le.fit_transform(Y["TRAIN"])
+                classifiers.logisticRegression(X["TRAIN"], y_train, prefix)
+            except:
+                print(traceback.print_exc())
+                log.log("\n\n\n\n\nERROR in training of LR\n\n\n\n")
+        
+        if "KM" in MODEL_LIST:
+            try:
+                classifiers.kmeans(X["TRAIN"], Y["TRAIN"], prefix)
+            except:
+                print(traceback.print_exc())
+                log.log("\n\n\n\n\nERROR in training of KM\n\n\n\n")
+        
+        if "NN" in MODEL_LIST:
+            try:
+                classifiers.nn(X["TRAIN"], Y["TRAIN"], prefix)
+            except:
+                print(traceback.print_exc())
+                log.log("\n\n\n\n\nERROR in training of NN\n\n\n\n")
+
+        if "SVM" in MODEL_LIST:
+            try:
+                classifiers.svm(X["TRAIN"], Y["TRAIN"], prefix)
+            except:
+                print(traceback.print_exc())
+                log.log("\n\n\n\n\nERROR in training of SVM\n\n\n\n")
+        
+
+    
+    if PREDICT:
+
+        # Predict
+        log.log("\n\nPREDICTING ...\n\n")
+        models = {}
+        le = LabelEncoder()
+        for mdl in MODEL_LIST:
+            models[mdl+"_"+prefix] = joblib.load('Models/{}_{}_model.pkl'.format(mdl, prefix))
+            if mdl in ['NB', 'XGB']:
+                y_val = [ 1 if x == 'M' else 0 for x in Y['VAL']]
+                classifiers.evaluate_model(mdl+"_"+prefix, models[mdl+"_"+prefix], X["VAL"], y_val)
+            elif mdl == "SVM":
+                y_val = [ 1 if x == 'M' else 0 for x in Y['VAL']]
+                classifiers.evaluate_model(mdl+"_"+prefix, models[mdl+"_"+prefix], X["VAL"], y_val)
+            else:
+                classifiers.evaluate_model(mdl+"_"+prefix, models[mdl+"_"+prefix], X["VAL"], Y["VAL"])
+
+    if ROC:        
+        ##ROC Curve
+        print("\n\n\nGenerating ROC\n\n")
+        models = {}
+        for mdl in MODEL_LIST:
+            models[mdl+"_"+prefix] = joblib.load('Models/{}_{}_model.pkl'.format(mdl, prefix))
+        fig = plt.figure(figsize=(7, 7), dpi=300)
+        axes = fig.gca()
+        for x in MODEL_LIST:
+            if x in ["NB", "XGB"]:
+                y_test = [ 1 if x == 'M' else 0 for x in Y['VAL']]
+                RocCurveDisplay.from_estimator(models[x+"_"+prefix], X["VAL"], y_test, ax=axes)
+            else:
+                RocCurveDisplay.from_estimator(models[x+"_"+prefix], X["VAL"], Y["VAL"], ax=axes)
+                RocCurveDisplay.from_estimator(models[x+"_"+prefix], X["VAL"], Y["VAL"], ax=axes)
+        plt.savefig("ROC.png")
+
+    if BEST:
+        # # BEST MODELS
+        print("\n\n\nBEST MODELS\n\n")
+        
+
+
 
 if __name__ == "__main__":
+    print("Welcome to RanForRed")
+    if len(sys.argv[1:]) == 0:
+        print("No arguments passed, please use -h or --help for help")
+        sys.exit()
+
+
     parser = OptionParser(option_class=log.MultipleOption)
     parser.add_option("-d", "--data", action="store_true", help="Preprocess the data from the CSV file")
     parser.add_option("-t", "--train", action="store_true", help="Train the models")
     parser.add_option("-p", "--predict", action="store_true", help="Predict from the trained models")
     parser.add_option("-r", "--roc", action="store_true", help="Produce the ROC Curve of the models predictions")
     parser.add_option("-b", "--best", action="store_true",help="Run the best models and compare on new data")
+    parser.add_option("-i", "--input", dest="input", help="Specify the input file")
     parser.add_option("-m", "--models", dest="models", metavar='MODELS', action="extend", 
                     help="Select the Models to be applied, by default all are applied, multiple can be selected comma-delimited. Valid choices are: %s." % (MODEL_LIST))
 
@@ -39,7 +217,17 @@ if __name__ == "__main__":
         ROC = 1
     if options.best != None:
         BEST = 1
-
+    if options.input == None:
+        print("-i flag for the Input file must be specified")
+        sys.exit()
+    else:
+        if not options.input.endswith(".csv"):
+            print("Please use a csv file for training")
+            sys.exit()
+        if not os.path.isfile(options.input):
+            print('Error: File does not exist')
+            sys.exit()
+        FILE = options.input   
     if options.models != None:
         if options.train != None or options.predict != None or options.roc != None:
             newList = []
@@ -64,168 +252,9 @@ if __name__ == "__main__":
     check = input("\nPlease verify your choices (Y/N): ")
     if check=="y" or check=="Y":
         print("Please wait while things init.")
-        # main()
+        log.log("Started with following settings: Data: " + str(DATA) + " Train: " + str(TRAIN) + ", Predict: " + str(PREDICT) + ", ROC: " + str(ROC) + ", BEST: " + str(BEST) + ", Models: " + str(MODEL_LIST), False)
+        main()
     else:
         print("Exiting ...")
         sys.exit()
-
-
-def main():
-    from sklearn.metrics import RocCurveDisplay
-    import joblib
-    import matplotlib.pyplot as plt
-    import classifiers
-    import data_reader
-    import pandas as pd
-    from datetime import datetime
-    import traceback
-    from sklearn.preprocessing import LabelEncoder
-
-    data_filename = "5_Entropy_of_PE_Sections_versioned.csv"
-    prefix = data_filename[0:3]
-
-    print(datetime.now())
-
-    # # STATS 
-    data = pd.read_csv(data_filename)
-    log.log("Dataset stats - Category: " + str(data["category"].value_counts()))
-    log.log("Dataset stats - Label: \n" + str(data["label"].value_counts()))
-    log.log("Dataset stats - Shape: " + str(data.shape))
-
-
-    if DATA:
-        log.log("Preparing data splitting ...")
-        data_reader.splitTrainTestVal(data_filename) 
-
-
-    log.log("Loading data ..")
-    X = {
-        "TRAIN": joblib.load("DATA/Train/"+prefix+"_features.pkl"),
-        "VAL": joblib.load("DATA/Validation/"+prefix+"_features.pkl"),
-        "TEST": joblib.load("DATA/Test/"+prefix+"_features.pkl")
-    }
-    Y = {
-        "TRAIN": joblib.load("DATA/Train/"+prefix+"_labels.pkl"),
-        "VAL": joblib.load("DATA/Validation/"+prefix+"_labels.pkl"),
-        "TEST": joblib.load("DATA/Test/"+prefix+"_labels.pkl")
-    }
-
-    
-    log.log("Dataset TRAIN Y: \n" + str(Y["TRAIN"].value_counts()))
-    log.log("Dataset VAL Y: \n" + str(Y["VAL"].value_counts()))
-    log.log("Dataset TEST Y: \n" + str(Y["TEST"].value_counts()))
-
-
-    if TRAIN:
-        # Classifier Training
-        log.log("\n\nTraining Classifiers ...")
-        try:
-            classifiers.randomForrest(X["TRAIN"], Y["TRAIN"], "RF")
-        except:
-            print(traceback.print_exc())
-            log.log("\n\n\n\n\nERROR in training of RF\n\n\n\n")
-        
-        try:
-            classifiers.gradientBoost(X["TRAIN"], Y["TRAIN"], "GBT")
-        except:
-            print(traceback.print_exc())   
-            log.log("\n\n\n\n\nERROR in training of DT\n\n\n\n")
-
-        try:
-            classifiers.adaBoost(X["TRAIN"], Y["TRAIN"], "AB")
-        except:
-            print(traceback.print_exc())
-            log.log("\n\n\n\n\nERROR in training of AB\n\n\n\n")
-            
-        try:
-            classifiers.knn(X["TRAIN"], Y["TRAIN"], "KNN")
-        except:
-            print(traceback.print_exc())
-            log.log("\n\n\n\n\nERROR in training of KNN\n\n\n\n")
-
-        try:
-            classifiers.decisionTree(X["TRAIN"], Y["TRAIN"], "DT")
-        except:
-            print(traceback.print_exc())   
-            log.log("\n\n\n\n\nERROR in training of DT\n\n\n\n")
-
-        try:
-            le = LabelEncoder()
-            y_train = le.fit_transform(Y["TRAIN"])
-            classifiers.naiveBayes(X["TRAIN"], y_train, "NB")
-        except:
-            print(traceback.print_exc())   
-            log.log("\n\n\n\n\nERROR in training of NB\n\n\n\n")
-
-        try:
-            le = LabelEncoder()
-            y_train = le.fit_transform(Y["TRAIN"])
-            classifiers.xgboost(X["TRAIN"], y_train, "XGB")
-        except:
-            print(traceback.print_exc())   
-            log.log("\n\n\n\n\nERROR in training of XGB\n\n\n\n")
-        
-        try:
-            classifiers.logisticRegression(X["TRAIN"], Y["TRAIN"], "LR")
-        except:
-            print(traceback.print_exc())
-            log.log("\n\n\n\n\nERROR in training of LR\n\n\n\n")
-        
-        try:
-            classifiers.kmeans(X["TRAIN"], Y["TRAIN"], "KM")
-        except:
-            print(traceback.print_exc())
-            log.log("\n\n\n\n\nERROR in training of KM\n\n\n\n")
-        
-        try:
-            classifiers.nn(X["TRAIN"], Y["TRAIN"], "NN")
-        except:
-            print(traceback.print_exc())
-            log.log("\n\n\n\n\nERROR in training of NN\n\n\n\n")
-
-        try:
-            classifiers.svm(X["TRAIN"], Y["TRAIN"], "SVM")
-        except:
-            print(traceback.print_exc())
-            log.log("\n\n\n\n\nERROR in training of SVM\n\n\n\n")
-        
-
-    
-    if PREDICT:
-
-        # Predict
-        log.log("\n\nPREDICTING ...\n\n")
-        models = {}
-        le = LabelEncoder()
-        for mdl in MODEL_LIST:
-            models[mdl+"_"+mdl] = joblib.load('Models/{}_{}_model.pkl'.format(mdl, mdl))
-            if mdl in ['NB', 'XGB']:
-                y_val = [ 1 if x == 'M' else 0 for x in Y['VAL']]
-                classifiers.evaluate_model(mdl+"_"+mdl, models[mdl+"_"+mdl], X["VAL"], y_val)
-            elif mdl == "SVM":
-                y_val = [ 1 if x == 'M' else 0 for x in Y['VAL']]
-                classifiers.evaluate_model(mdl+"_"+mdl, models[mdl+"_"+mdl], X["VAL"], y_val)
-            else:
-                classifiers.evaluate_model(mdl+"_"+mdl, models[mdl+"_"+mdl], X["VAL"], Y["VAL"])
-
-    if ROC:        
-        ##ROC Curve
-        print("\n\n\nGenerating ROC\n\n")
-        models = {}
-        for mdl in MODEL_LIST:
-            models[mdl+"_"+mdl] = joblib.load('Models/{}_{}_model.pkl'.format(mdl, mdl))
-        fig = plt.figure(figsize=(7, 7), dpi=300)
-        axes = fig.gca()
-        for x in MODEL_LIST:
-            if x in ["NB", "XGB"]:
-                y_test = [ 1 if x == 'M' else 0 for x in Y['VAL']]
-                RocCurveDisplay.from_estimator(models[x+"_"+x], X["VAL"], y_test, ax=axes)
-            else:
-                RocCurveDisplay.from_estimator(models[x+"_"+x], X["VAL"], Y["VAL"], ax=axes)
-        plt.savefig("ROC.png")
-
-    if BEST:
-        # # BEST MODELS
-        print("\n\n\nBEST MODELS\n\n")
-        
 

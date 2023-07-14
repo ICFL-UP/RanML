@@ -2,8 +2,9 @@ from datetime import datetime
 from optparse import OptionParser
 from optparse import Option, OptionValueError
 
-def log(text):
-    print(text)
+def log(text, p=True):
+    if p:
+        print(text)
     with open('out.log', 'a') as f:
         f.write("\n"+str(datetime.now()) + " -> " + text)
 
