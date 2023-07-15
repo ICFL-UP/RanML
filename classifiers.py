@@ -10,7 +10,7 @@ from sklearn.naive_bayes import GaussianNB
 from sklearn.ensemble import AdaBoostClassifier, RandomForestClassifier, GradientBoostingClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import LogisticRegression
 from sklearn.decomposition import PCA
 from sklearn.cluster import KMeans
 from sklearn.model_selection import GridSearchCV, cross_validate
@@ -27,19 +27,24 @@ def print_results(results, classifier):
     log.log('BEST PARAMS for {}: {}\n'.format(classifier, results.best_params_))
 
 
-def evaluate_model(name, model, features, labels):
+def evaluate_model(name, model, features, labels, prefix):
     start = time.time()
     pred = model.predict(features)
     end = time.time()
     accuracy = round(accuracy_score(labels, pred), 4)
-    if name in ["XGB_XGB", "NB_NB"]:
+    if name in ["XGB_"+prefix, "NB_"+prefix, "LR_"+prefix]:
         precision = round(precision_score(labels, pred, pos_label=1), 4)
         recall = round(recall_score(labels, pred, pos_label=1), 4)
         f1 = round(f1_score(labels, pred, pos_label=1), 4)
     else:
-        precision = round(precision_score(labels, pred, pos_label='M'), 4)
-        recall = round(recall_score(labels, pred, pos_label='M'), 4)
-        f1 = round(f1_score(labels, pred, pos_label='M'), 4)
+        if name in ["KM_"+prefix]:
+            precision = round(precision_score(labels, pred, pos_label='M', average='micro'), 4)
+            recall = round(recall_score(labels, pred, pos_label='M', average='micro'), 4)
+            f1 = round(f1_score(labels, pred, pos_label='M', average='micro'), 4)
+        else:
+            precision = round(precision_score(labels, pred, pos_label='M'), 4)
+            recall = round(recall_score(labels, pred, pos_label='M'), 4)
+            f1 = round(f1_score(labels, pred, pos_label='M'), 4)
     auc = round(roc_auc_score(labels, model.predict_proba(features)[:, 1]), 4)
     logloss = round(log_loss(labels, model.predict_proba(features)), 4)
 
@@ -49,10 +54,10 @@ def evaluate_model(name, model, features, labels):
     TP = np.diag(cm)
     TN = cm.sum() - (FP + FN + TP)
     lat = round((end - start)*1000, 4)
-    log.log('\n\n{} -- TP: {} / TN: {} / FP: {} / FN: {} / Recall: {} / Precision: {} / F1-Score: {} / Accuracy: {}  / AUC: {} / LogLoss: {} / Latency: {}ms / Num: {}'.format(
-        name, TP[0], TN[0], FP[0], FN[0], recall, precision, f1, accuracy, auc, logloss, lat, len(pred)))
-    log.log("{} & {} & {} & {} & {} & {} & {} \n{} & {} & {} & {} & {}".format(TP[0], TN[0], FP[0], FN[0], recall, precision, f1, accuracy, auc, logloss, lat, round(lat/len(pred),4)))
-
+    log.log(log.Color.GREEN+'\n\n{} -- '.format(name) +log.Color.END+'\nTP: {} \nTN: {} \nFP: {} \nFN: {} \nRecall: {} \nPrecision: {} \nF1-Score: {}  \nAUC: {} \nLogLoss: {} \nLatency: {}ms \nNum: {} \nAccuracy: {}\n\n'.format(
+        TP[0], TN[0], FP[0], FN[0], recall, precision, f1, auc, logloss, lat, len(pred), accuracy))
+    #log.log("{} & {} & {} & {} & {} & {} & {} \n{} & {} & {} & {} & {}".format(TP[0], TN[0], FP[0], FN[0], recall, precision, f1, accuracy, auc, logloss, lat, round(lat/len(pred),4)))
+    return [name, TP[0], TN[0], FP[0], FN[0], recall, precision, f1, auc, logloss, lat, len(pred), accuracy]
 
 # ====================================================================
 # ================  Classifiers
@@ -192,7 +197,7 @@ def logisticRegression(train_data, correct_class, nlp):
     log.log("\nTraining LR for {}...".format(nlp))
     with parallel_backend('threading', n_jobs=os.cpu_count()):
         start_time = time.time()
-        classifier = LinearRegression()
+        classifier = LogisticRegression()
         param = {
             
         }
