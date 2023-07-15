@@ -151,18 +151,19 @@ def main():
 
         # Predict
         log.log("\n\nPREDICTING ...\n\n")
+        results = []
         models = {}
         le = LabelEncoder()
         for mdl in MODEL_LIST:
             models[mdl+"_"+prefix] = joblib.load('Models/{}_{}_model.pkl'.format(mdl, prefix))
-            if mdl in ['NB', 'XGB']:
+            if mdl in ['LR', 'NB', 'XGB', 'SVM', 'KM']:
                 y_val = [ 1 if x == 'M' else 0 for x in Y['VAL']]
-                classifiers.evaluate_model(mdl+"_"+prefix, models[mdl+"_"+prefix], X["VAL"], y_val)
-            elif mdl == "SVM":
-                y_val = [ 1 if x == 'M' else 0 for x in Y['VAL']]
-                classifiers.evaluate_model(mdl+"_"+prefix, models[mdl+"_"+prefix], X["VAL"], y_val)
+                results.append(classifiers.evaluate_model(mdl+"_"+prefix, models[mdl+"_"+prefix], X["VAL"], y_val, prefix))
             else:
-                classifiers.evaluate_model(mdl+"_"+prefix, models[mdl+"_"+prefix], X["VAL"], Y["VAL"])
+                results.append(classifiers.evaluate_model(mdl+"_"+prefix, models[mdl+"_"+prefix], X["VAL"], Y["VAL"], prefix))
+        from tabulate import tabulate
+        log.log(tabulate(results, headers=["Name", "TP", "TN", "FP", "FN", "Recall", "Precision", "F1-Score", "AUC", "LogLoss", "Latency(ms)", "Num", "Accuracy"]))
+
 
     if ROC:        
         ##ROC Curve
@@ -189,7 +190,7 @@ def main():
 
 
 if __name__ == "__main__":
-    print("Welcome to RanForRed")
+    print("\n\nWelcome to "+Color.GREEN+"Ran"+Color.BLUE+"For"+Color.RED+"Red\n\n"+Color.END)
     if len(sys.argv[1:]) == 0:
         print("No arguments passed, please use -h or --help for help")
         sys.exit()
@@ -202,6 +203,7 @@ if __name__ == "__main__":
     parser.add_option("-r", "--roc", action="store_true", help="Produce the ROC Curve of the models predictions")
     parser.add_option("-b", "--best", action="store_true",help="Run the best models and compare on new data")
     parser.add_option("-i", "--input", dest="input", help="Specify the input file")
+    parser.add_option("-s", "--silent", action="store_true", help="Silent - no prompts to verify")
     parser.add_option("-m", "--models", dest="models", metavar='MODELS', action="extend", 
                     help="Select the Models to be applied, by default all are applied, multiple can be selected comma-delimited. Valid choices are: %s." % (MODEL_LIST))
 
@@ -241,6 +243,7 @@ if __name__ == "__main__":
         print("No valid arguments passed, please use -h or --help for help")
         sys.exit()
 
+    
     print("Your choices: ")
     print("Data: ", Color.GREEN + "True" + Color.END if DATA == 1 else "False")
     print("Train: ", Color.GREEN + "True" + Color.END if TRAIN == 1 else "False")
@@ -249,12 +252,16 @@ if __name__ == "__main__":
     print("BEST: ", Color.GREEN + "True" + Color.END if BEST == 1 else "False")
     print("Models: ", MODEL_LIST)
 
-    check = input("\nPlease verify your choices (Y/N): ")
-    if check=="y" or check=="Y":
-        print("Please wait while things init.")
+    if not options.silent:
+        check = input("\nPlease verify your choices (Y/N): ")
+        if check=="y" or check=="Y":
+            print("Please wait while things initialize ...")
+            log.log("Started with following settings: Data: " + str(DATA) + " Train: " + str(TRAIN) + ", Predict: " + str(PREDICT) + ", ROC: " + str(ROC) + ", BEST: " + str(BEST) + ", Models: " + str(MODEL_LIST), False)
+            main()
+        else:
+            print("Exiting ...")
+            sys.exit()
+    else:
+        print("Please wait while things initialize ...")
         log.log("Started with following settings: Data: " + str(DATA) + " Train: " + str(TRAIN) + ", Predict: " + str(PREDICT) + ", ROC: " + str(ROC) + ", BEST: " + str(BEST) + ", Models: " + str(MODEL_LIST), False)
         main()
-    else:
-        print("Exiting ...")
-        sys.exit()
-
