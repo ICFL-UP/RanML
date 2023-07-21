@@ -6,12 +6,13 @@ from optparse import OptionParser
 import os
 # Globals
 FILE = ""
-MODEL_LIST = ['RF','GBT', 'AB', 'KNN', 'DT', 'NB', 'LR', 'XGB', 'KM', 'NN', 'SVM']
+MODEL_LIST = ['RF','GBT', 'AB', 'KNN', 'DT', 'NB', 'LR', 'XGB', 'NN', 'SVM'] # 
 DATA = 0
 TRAIN = 0
 PREDICT = 0
 ROC = 0
 BEST = 0
+CM = 0
 
 
 def main():
@@ -24,6 +25,7 @@ def main():
     from datetime import datetime
     import traceback
     from sklearn.preprocessing import LabelEncoder
+    from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 
     prefix = FILE[0:3]
 
@@ -156,7 +158,7 @@ def main():
         le = LabelEncoder()
         for mdl in MODEL_LIST:
             models[mdl+"_"+prefix] = joblib.load('Models/{}_{}_model.pkl'.format(mdl, prefix))
-            if mdl in ['LR', 'NB', 'XGB', 'SVM', 'KM']:
+            if mdl in ['LR', 'NB', 'XGB', 'KM']:
                 y_val = [ 1 if x == 'M' else 0 for x in Y['VAL']]
                 results.append(classifiers.evaluate_model(mdl+"_"+prefix, models[mdl+"_"+prefix], X["VAL"], y_val, prefix))
             else:
@@ -174,17 +176,46 @@ def main():
         fig = plt.figure(figsize=(7, 7), dpi=300)
         axes = fig.gca()
         for x in MODEL_LIST:
-            if x in ["NB", "XGB"]:
+            if x in ['LR', 'NB', 'XGB', 'KM']:
                 y_test = [ 1 if x == 'M' else 0 for x in Y['VAL']]
                 RocCurveDisplay.from_estimator(models[x+"_"+prefix], X["VAL"], y_test, ax=axes)
             else:
                 RocCurveDisplay.from_estimator(models[x+"_"+prefix], X["VAL"], Y["VAL"], ax=axes)
-                RocCurveDisplay.from_estimator(models[x+"_"+prefix], X["VAL"], Y["VAL"], ax=axes)
+                
         plt.savefig("ROC.png")
+
+    if CM:
+        # Confusion Matrix
+        print("\n\n\nGenerating Confusion Matrix\n\n\n")
+        models = {}
+        for mdl in MODEL_LIST:
+            models[mdl+"_"+prefix] = joblib.load('Models/{}_{}_model.pkl'.format(mdl, prefix))
+
+        if not os.path.exists("CM"):
+            os.mkdir("CM")
+        for x in MODEL_LIST:
+            fig = plt.figure(figsize=(7, 7), dpi=300)
+            axes = fig.gca()
+            if x in ['LR', 'NB', 'XGB', 'KM']:
+                y_test = [ 1 if x == 'M' else 0 for x in Y['VAL']]
+                ConfusionMatrixDisplay.from_estimator(models[x+"_"+prefix], X["VAL"], y_test, ax=axes)
+            else:
+                ConfusionMatrixDisplay.from_estimator(models[x+"_"+prefix], X["VAL"], Y["VAL"], ax=axes)
+                
+            plt.savefig("CM/"+x+"_"+prefix+".png")
 
     if BEST:
         # # BEST MODELS
         print("\n\n\nBEST MODELS\n\n")
+        mdl = "RF"
+        log.log("Training bagging on " + mdl)
+        best = joblib.load('Models/{}_{}_model.pkl'.format(mdl, prefix))
+        classifiers.bagging_best(X['TRAIN'], Y['TRAIN'], prefix, best)
+
+        results = classifiers.evaluate_model("BEST_"+prefix, best, X["TEST"], Y["TEST"], prefix)
+        from tabulate import tabulate
+        log.log(tabulate(results, headers=["Name", "TP", "TN", "FP", "FN", "Recall", "Precision", "F1-Score", "AUC", "LogLoss", "Latency(ms)", "Num", "Accuracy"]))
+
         
 
 
@@ -202,6 +233,7 @@ if __name__ == "__main__":
     parser.add_option("-p", "--predict", action="store_true", help="Predict from the trained models")
     parser.add_option("-r", "--roc", action="store_true", help="Produce the ROC Curve of the models predictions")
     parser.add_option("-b", "--best", action="store_true",help="Run the best models and compare on new data")
+    parser.add_option("-c", "--confusion", action="store_true",help="Produce the Confusion matrix image for the models")
     parser.add_option("-i", "--input", dest="input", help="Specify the input file")
     parser.add_option("-s", "--silent", action="store_true", help="Silent - no prompts to verify")
     parser.add_option("-m", "--models", dest="models", metavar='MODELS', action="extend", 
@@ -216,7 +248,9 @@ if __name__ == "__main__":
     if options.predict != None:
         PREDICT = 1
     if options.roc != None:
-        ROC = 1
+        ROC = 1    
+    if options.confusion != None:
+        CM = 1
     if options.best != None:
         BEST = 1
     if options.input == None:
@@ -239,7 +273,7 @@ if __name__ == "__main__":
             MODEL_LIST = newList
         else:
             print("-m can only be used with the following flags [-t, -p, -r]")
-    if options.train == None and options.data == None and options.predict == None and options.roc == None and options.best == None:
+    if options.train == None and options.data == None and options.predict == None and options.roc == None and options.best == None and options.confusion == None:
         print("No valid arguments passed, please use -h or --help for help")
         sys.exit()
 
@@ -249,6 +283,7 @@ if __name__ == "__main__":
     print("Train: ", Color.GREEN + "True" + Color.END if TRAIN == 1 else "False")
     print("Predict: ", Color.GREEN + "True" + Color.END if PREDICT == 1 else "False")
     print("ROC: ", Color.GREEN + "True" + Color.END if ROC == 1 else "False")
+    print("CM: ", Color.GREEN + "True" + Color.END if CM == 1 else "False")
     print("BEST: ", Color.GREEN + "True" + Color.END if BEST == 1 else "False")
     print("Models: ", MODEL_LIST)
 

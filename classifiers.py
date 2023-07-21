@@ -7,7 +7,7 @@ from joblib import parallel_backend
 import joblib
 from xgboost import XGBClassifier
 from sklearn.naive_bayes import GaussianNB
-from sklearn.ensemble import AdaBoostClassifier, RandomForestClassifier, GradientBoostingClassifier
+from sklearn.ensemble import AdaBoostClassifier, RandomForestClassifier, GradientBoostingClassifier, BaggingClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.linear_model import LogisticRegression
@@ -117,6 +117,24 @@ def adaBoost(train_data, correct_class, nlp):
         print_results(cv, "AdaBoost + {}".format(nlp))
         joblib.dump(cv.best_estimator_, 'Models/AB_{}_model.pkl'.format(nlp))
         log.log("Train time for AdaBoost + {}: ".format(nlp) + str((time.time() - start_time) / 60) + " min")
+        return cv.best_estimator_
+
+
+def bagging(train_data, correct_class, nlp):
+    log.log("\nTraining Bagging for {}...".format(nlp))
+    with parallel_backend('threading', n_jobs=os.cpu_count()):
+        start_time = time.time()
+        classifier = BaggingClassifier()
+        param = {
+            'n_estimators': [5, 10, 50, 250],
+            'estimator': [RandomForestClassifier(), DecisionTreeClassifier(), ]
+        }
+
+        cv = GridSearchCV(classifier, param, cv=CV)
+        cv.fit(train_data, correct_class.ravel())
+        print_results(cv, "Bagging + {}".format(nlp))
+        joblib.dump(cv.best_estimator_, 'Models/BC_{}_model.pkl'.format(nlp))
+        log.log("Train time for Bagging + {}: ".format(nlp) + str((time.time() - start_time) / 60) + " min")
         return cv.best_estimator_
 
 
@@ -252,9 +270,9 @@ def svm(train_data, correct_class, nlp):
     log.log("\nTraining SVM for {}...".format(nlp))
     with parallel_backend('threading', n_jobs=os.cpu_count()):
         start_time = time.time()
-        classifier = SVC()  
+        classifier = SVC(verbose=True)  
         param = {
-            'kernel': ['linear', 'rbg', 'sigmoid'],
+            'kernel': ['rbg', 'sigmoid'],
             'C': [0.1, 1, 10],
             'probability': [True]
         }
@@ -264,4 +282,21 @@ def svm(train_data, correct_class, nlp):
         print_results(cv, "SVM + {}".format(nlp))
         joblib.dump(cv.best_estimator_, 'Models/SVM_{}_model.pkl'.format(nlp))
         log.log("Train time for SVM + {}: ".format(nlp) + str((time.time() - start_time) / 60) + " min")
+        return cv.best_estimator_
+
+
+def bagging_best(train_data, correct_class, nlp, estimator):
+    log.log("\nTraining Bagging for {}...".format(nlp))
+    with parallel_backend('threading', n_jobs=os.cpu_count()):
+        start_time = time.time()
+        classifier = BaggingClassifier(estimator=estimator)
+        param = {
+            'n_estimators': [5, 10, 50, 250],
+        }
+
+        cv = GridSearchCV(classifier, param, cv=CV)
+        cv.fit(train_data, correct_class.ravel())
+        print_results(cv, "Bagging + {}".format(nlp))
+        joblib.dump(cv.best_estimator_, 'Models/BEST_{}_model.pkl'.format(nlp))
+        log.log("Train time for Bagging + {}: ".format(nlp) + str((time.time() - start_time) / 60) + " min")
         return cv.best_estimator_
