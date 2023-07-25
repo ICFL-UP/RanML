@@ -164,7 +164,7 @@ def main():
             else:
                 results.append(classifiers.evaluate_model(mdl+"_"+prefix, models[mdl+"_"+prefix], X["VAL"], Y["VAL"], prefix))
         from tabulate import tabulate
-        log.log(tabulate(results, headers=["Name", "TP", "TN", "FP", "FN", "Recall", "Precision", "F1-Score", "AUC", "LogLoss", "Latency(ms)", "Num", "Accuracy"]))
+        log.log("\n\n"+tabulate(results, headers=["Name", "TP", "TN", "FP", "FN", "Recall", "Precision", "F1-Score", "AUC", "LogLoss", "Latency(ms)", "Num", "Accuracy"])+"\n\n\n")
 
 
     if ROC:        
