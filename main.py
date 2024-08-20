@@ -41,7 +41,8 @@ def main():
     from sklearn.preprocessing import LabelEncoder
     from sklearn.metrics import ConfusionMatrixDisplay
 
-    prefix = FILE[0:3]
+    prefix = os.path.basename(FILE)
+    prefix = prefix[0:prefix.index("_")]
 
     print(datetime.now())
 
@@ -57,7 +58,7 @@ def main():
 
     if DATA:
         log.log("Preparing data splitting ...")
-        data_reader.splitTrainTestVal(FILE)
+        data_reader.splitTrainTestVal(FILE, prefix)
 
     log.log("Loading data ..")
     X = {
@@ -71,9 +72,15 @@ def main():
         "TEST": joblib.load("DATA/Test/" + prefix + "_labels.pkl"),
     }
 
-    log.log("Dataset TRAIN Y: \n" + str(Y["TRAIN"].value_counts()))
-    log.log("Dataset VAL Y: \n" + str(Y["VAL"].value_counts()))
-    log.log("Dataset TEST Y: \n" + str(Y["TEST"].value_counts()))
+    log.log(
+        "Dataset TRAIN {}: \n".format(prefix)
+        + str(Y["TRAIN"].value_counts()))
+    log.log(
+        "Dataset VAL {}: \n".format(prefix)
+        + str(Y["VAL"].value_counts()))
+    log.log(
+        "Dataset TEST {}: \n".format(prefix)
+        + str(Y["TEST"].value_counts()))
 
     if TRAIN:
         # Classifier Training
