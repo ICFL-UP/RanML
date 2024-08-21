@@ -11,7 +11,7 @@ def splitTrainTestVal(filename, prefix):
     log.log("Reading data from CSV ...")
 
     df = pd.read_csv(filename, index_col="Unnamed: 0")
-    df = df.dropna()
+    df = df = df[df['label'].notna()]
     print(
         "\n\nNOTE: There must be a 'label' column, "
         "it will be removed from the dataset before training."

@@ -134,7 +134,7 @@ def randomForrest(train_data, correct_class, nlp):
             "criterion": ["gini", "entropy", "log_loss"],
         }
 
-        cv = GridSearchCV(rf, param, cv=CV, verbose=1)
+        cv = GridSearchCV(rf, param, cv=CV, verbose=10)
         cv.fit(train_data, correct_class.to_numpy())
         print_results(cv, "RandomForrest + {}".format(nlp))
         joblib.dump(cv.best_estimator_, "Models/RF_{}_model.pkl".format(nlp))
@@ -159,7 +159,7 @@ def gradientBoost(train_data, correct_class, nlp):
             "learning_rate": [0.01, 0.1, 1, 10, 100],
         }
 
-        cv = GridSearchCV(gbt, param, cv=CV, verbose=1)
+        cv = GridSearchCV(gbt, param, cv=CV, verbose=10)
         cv.fit(train_data, correct_class.to_numpy())
         print_results(cv, "Gradient Boosted Tree + {}".format(nlp))
         joblib.dump(cv.best_estimator_, "Models/GBT_{}_model.pkl".format(nlp))
@@ -181,7 +181,7 @@ def adaBoost(train_data, correct_class, nlp):
             "learning_rate": [0.01, 0.1, 1, 10, 100]
         }
 
-        cv = GridSearchCV(classifier, param, cv=CV,)
+        cv = GridSearchCV(classifier, param, cv=CV, verbose=10)
         cv.fit(train_data, correct_class.to_numpy())
         print_results(cv, "AdaBoost + {}".format(nlp))
         joblib.dump(cv.best_estimator_, "Models/AB_{}_model.pkl".format(nlp))
@@ -206,7 +206,7 @@ def bagging(train_data, correct_class, nlp):
             ],
         }
 
-        cv = GridSearchCV(classifier, param, cv=CV, verbose=1)
+        cv = GridSearchCV(classifier, param, cv=CV, verbose=10)
         cv.fit(train_data, correct_class.to_numpy())
         print_results(cv, "Bagging + {}".format(nlp))
         joblib.dump(cv.best_estimator_, "Models/BC_{}_model.pkl".format(nlp))
@@ -230,7 +230,7 @@ def knn(train_data, correct_class, nlp):
             "leaf_size": [5, 50, 250],
         }
 
-        cv = GridSearchCV(classifier, param, cv=CV, verbose=1)
+        cv = GridSearchCV(classifier, param, cv=CV, verbose=10)
         cv.fit(train_data, correct_class.to_numpy())
         print_results(cv, "KNN + {}".format(nlp))
         joblib.dump(cv.best_estimator_, "Models/KNN_{}_model.pkl".format(nlp))
@@ -252,7 +252,7 @@ def decisionTree(train_data, correct_class, nlp):
             "splitter": ["best", "random"],
         }
 
-        cv = GridSearchCV(classifier, param, cv=CV, verbose=1)
+        cv = GridSearchCV(classifier, param, cv=CV, verbose=10)
         cv.fit(train_data, correct_class.to_numpy())
         print_results(cv, "DT + {}".format(nlp))
         joblib.dump(cv.best_estimator_, "Models/DT_{}_model.pkl".format(nlp))
@@ -271,7 +271,7 @@ def naiveBayes(train_data, correct_class, nlp):
         classifier = GaussianNB()
         param = {"var_smoothing": np.logspace(0, -9, num=100)}
 
-        cv = GridSearchCV(classifier, param, cv=CV, verbose=1)
+        cv = GridSearchCV(classifier, param, cv=CV, verbose=10)
         cv.fit(train_data, correct_class.to_numpy())
         print_results(cv, "NB + {}".format(nlp))
         joblib.dump(cv.best_estimator_, "Models/NB_{}_model.pkl".format(nlp))
@@ -293,7 +293,7 @@ def xgboost(train_data, correct_class, nlp):
             "learning_rate": [0.01, 0.1, 1, 10, 100],
         }
 
-        cv = GridSearchCV(classifier, param, cv=CV, verbose=1)
+        cv = GridSearchCV(classifier, param, cv=CV, verbose=10)
         cv.fit(train_data, correct_class.to_numpy())
         print_results(cv, "XGB + {}".format(nlp))
         joblib.dump(cv.best_estimator_, "Models/XGB_{}_model.pkl".format(nlp))
@@ -316,8 +316,8 @@ def logisticRegression(train_data, correct_class, nlp):
             "solver": ["lbfgs", "newton-cg", "liblinear", "sag", "saga"],
             "max_iter": [100, 1000, 2500, 5000],
         }
-        
-        cv = GridSearchCV(classifier, param, cv=CV, verbose=1)
+
+        cv = GridSearchCV(classifier, param, cv=CV, verbose=10)
         cv.fit(
             StandardScaler().fit_transform(train_data),  # Scale the data
             correct_class.to_numpy())
@@ -347,7 +347,7 @@ def kmeans(train_data, correct_class, nlp):
             "random_state": [0, 42, 100],
         }
 
-        cv = GridSearchCV(classifier, param, cv=CV, verbose=1)
+        cv = GridSearchCV(classifier, param, cv=CV, verbose=10)
         cv.fit(train_data, correct_class.to_numpy())
         print_results(cv, "KM + {}".format(nlp))
         joblib.dump(cv.best_estimator_, "Models/KM_{}_model.pkl".format(nlp))
@@ -372,7 +372,7 @@ def nn(train_data, correct_class, nlp):
             "learning_rate": ["constant", "adaptive"],
         }
 
-        cv = GridSearchCV(classifier, param, cv=CV, verbose=1)
+        cv = GridSearchCV(classifier, param, cv=CV, verbose=10)
         cv.fit(train_data, correct_class.to_numpy())
         print_results(cv, "NN + {}".format(nlp))
         joblib.dump(cv.best_estimator_, "Models/NN_{}_model.pkl".format(nlp))
@@ -395,7 +395,7 @@ def svm(train_data, correct_class, nlp):
             "probability": [True]
         }
 
-        cv = GridSearchCV(classifier, param, cv=CV, verbose=1)
+        cv = GridSearchCV(classifier, param, cv=CV, verbose=10)
         cv.fit(train_data, correct_class.to_numpy())
         print_results(cv, "SVM + {}".format(nlp))
         joblib.dump(cv.best_estimator_, "Models/SVM_{}_model.pkl".format(nlp))
@@ -416,7 +416,7 @@ def bagging_best(train_data, correct_class, nlp, estimator):
             "n_estimators": [5, 10, 50, 250],
         }
 
-        cv = GridSearchCV(classifier, param, cv=CV, verbose=1)
+        cv = GridSearchCV(classifier, param, cv=CV, verbose=10)
         cv.fit(train_data, correct_class.to_numpy())
         print_results(cv, "Bagging + {}".format(nlp))
         joblib.dump(cv.best_estimator_, "Models/BEST_{}_model.pkl".format(nlp))

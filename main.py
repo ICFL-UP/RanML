@@ -48,13 +48,14 @@ def main():
 
     # # STATS
     data = pd.read_csv(FILE)
-    log.log(
-        prefix + " Dataset stats - Category: " +
-        str(data["category"].value_counts())
-    )
-    log.log(prefix + " Dataset stats - Label: \n" +
-            str(data["label"].value_counts()))
-    log.log(prefix + " Dataset stats - Shape: " + str(data.shape))
+    if "category" in data:
+        log.log(
+            prefix + " Dataset stats - Category: " +
+            str(data["category"].value_counts())
+        )
+        log.log(prefix + " Dataset stats - Label: \n" +
+                str(data["label"].value_counts()))
+        log.log(prefix + " Dataset stats - Shape: " + str(data.shape))
 
     if DATA:
         log.log("Preparing data splitting ...")
