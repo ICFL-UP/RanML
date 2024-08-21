@@ -95,7 +95,7 @@ def splitTrainTestVal(filename, prefix):
                 i = 0
                 for c in df.columns:
                     if str(i) in column.split(",") or column == "a":
-                        df[c].fillna(0, inplace=True)
+                        df[c] = df[c].fillna(0)
                     i += 1
         else:
             fill = False
