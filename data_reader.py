@@ -72,6 +72,34 @@ def splitTrainTestVal(filename, prefix):
                     i += 1
         else:
             encode = False
+
+    fill = True
+    while fill:
+        print(df.head())
+        convert = input(
+            "Do you want to "
+            + log.Color.CYAN
+            + "Fill Blanks with 0 on "
+            + log.Color.END
+            + "any columns? (Y/N)?: "
+        )
+        if convert == "Y" or convert == "y":
+            column = 0
+            for c in df.columns:
+                print(str(column) + ": " + c)
+                column += 1
+            column = input(
+                "Select a column(s) (e.g. 1) or "
+                "multiple (e.g. 1,2,3) or 'a' for all: ")
+            if column != "":
+                i = 0
+                for c in df.columns:
+                    if str(i) in column.split(",") or column == "a":
+                        df[c].fillna(0, inplace=True)
+                    i += 1
+        else:
+            fill = False
+
     labels = df["label"]
     df = df.drop(columns=["label"])
     features = df.to_numpy()
