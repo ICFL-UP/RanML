@@ -122,12 +122,15 @@ def evaluate_model(name, model, features, labels, prefix):
 # ====================================================================
 # ================  Classifiers
 # ====================================================================
-def randomForrest(train_data, correct_class, nlp):
+def randomForrest(train_data, correct_class, nlp, cw=None):
     log.log("\nTraining RandomForrest for {}...".format(nlp))
     with parallel_backend("threading", n_jobs=os.cpu_count()):
 
         start_time = time.time()
-        rf = RandomForestClassifier()
+        if cw:
+            rf = RandomForestClassifier(class_weight=cw)
+        else:
+            rf = RandomForestClassifier(class_weight=cw)
         param = {
             "n_estimators": [5, 50, 250],
             "max_depth": [2, 4, 8, 16, 32, None],
@@ -242,11 +245,14 @@ def knn(train_data, correct_class, nlp):
         return cv.best_estimator_
 
 
-def decisionTree(train_data, correct_class, nlp):
+def decisionTree(train_data, correct_class, nlp, cw=None):
     log.log("\nTraining Decision Tree for {}...".format(nlp))
     with parallel_backend("threading", n_jobs=os.cpu_count()):
         start_time = time.time()
-        classifier = DecisionTreeClassifier()
+        if cw:
+            classifier = DecisionTreeClassifier(class_weight=cw)
+        else:
+            classifier = DecisionTreeClassifier()
         param = {
             "criterion": ["gini", "entropy", "log_loss"],
             "splitter": ["best", "random"],
@@ -305,16 +311,19 @@ def xgboost(train_data, correct_class, nlp):
         return cv.best_estimator_
 
 
-def logisticRegression(train_data, correct_class, nlp):
+def logisticRegression(train_data, correct_class, nlp, cw=None):
     log.log("\nTraining LR for {}...".format(nlp))
     with parallel_backend("threading", n_jobs=os.cpu_count()):
         start_time = time.time()
-        classifier = LogisticRegression()
+        if cw:
+            classifier = LogisticRegression(class_weight=cw)
+        else:
+            classifier = LogisticRegression()
         param = {
-            "penalty": ["l1", "l2", "elasticnet", "none"],
-            "C": np.logspace(-4, 4, 20),
-            "solver": ["lbfgs", "newton-cg", "liblinear", "sag", "saga"],
-            "max_iter": [100, 1000, 2500, 5000],
+            "penalty": ["l2"],
+            "C": [100, 10, 1.0, 0.1, 0.01],
+            "solver": ['lbfgs'],
+#            "max_iter": [100, 1000, 2500, 5000],
         }
 
         cv = GridSearchCV(classifier, param, cv=CV, verbose=10)
@@ -384,11 +393,14 @@ def nn(train_data, correct_class, nlp):
         return cv.best_estimator_
 
 
-def svm(train_data, correct_class, nlp):
+def svm(train_data, correct_class, nlp, cw=None):
     log.log("\nTraining SVM for {}...".format(nlp))
     with parallel_backend("threading", n_jobs=os.cpu_count()):
         start_time = time.time()
-        classifier = SVC(verbose=True)
+        if cw:
+            classifier = SVC(verbose=True, class_weight=cw)
+        else:
+            classifier = SVC(verbose=True)
         param = {
             "kernel": ["rbg", "sigmoid"],
             "C": [0.1, 1, 10],

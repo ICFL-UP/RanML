@@ -5,6 +5,9 @@ from sklearn.model_selection import train_test_split
 import pandas as pd
 from sklearn.preprocessing import LabelEncoder
 import log
+from sklearn.utils.class_weight import compute_class_weight
+import numpy as np
+from imblearn.over_sampling import SMOTE
 
 
 def splitTrainTestVal(filename, prefix):
@@ -100,13 +103,46 @@ def splitTrainTestVal(filename, prefix):
         else:
             fill = False
 
+    smote = False
+    class_weight = False
+    convert = input(
+        "Do you want to "
+        + log.Color.CYAN
+        + "RE-BALANCE "
+        + log.Color.END
+        + "the dataset? (Y/N)?: "
+    )
+    if convert == "Y" or convert == "y":
+        print("0: SMOTE \n1: Class Weight")
+        selection = input("Select an option (e.g. 1): ")
+        if selection == "0":
+            smote = True
+        if selection == "1":
+            class_weight = True
+
     labels = df["label"]
     df = df.drop(columns=["label"])
     features = df.to_numpy()
 
+    label_weights = []
+    if class_weight: 
+        log.log("Performing class weighting ...")
+        label_weights = compute_class_weight(class_weight="balanced", classes=np.unique(labels), y=labels)
+        log.log("Class weights: ", label_weights)
+        prefix += "CW"
+
+    if smote:
+        log.log("Performing SMOTE ...")
+        smoteObj = SMOTE()
+        features, labels = smoteObj.fit_resample(features, labels)
+        prefix += "SMOTE"
+        stats(features, labels)
+
+    log.log("Splitting data for training 60%")
     train, test, train_labels, lab = train_test_split(
         features, labels, test_size=0.4, random_state=42, stratify=labels
     )
+    log.log("Splitting data for testing and validation 20/20")
     validation, test_data, validation_labels, test_labels = train_test_split(
         test, lab, test_size=0.5, random_state=42, stratify=lab
     )
@@ -121,6 +157,8 @@ def splitTrainTestVal(filename, prefix):
         os.mkdir("DATA/Validation")
     if not os.path.exists("Models"):
         os.mkdir("Models")
+    if not os.path.exists("CW"):
+        os.mkdir("CW")
 
     log.log("\n\nSaving Data ...\n\n")
 
@@ -138,6 +176,12 @@ def splitTrainTestVal(filename, prefix):
         validation_labels,
         os.path.join("DATA/Validation/", prefix + "_labels.pkl")
     )
+
+    if class_weight:
+        joblib.dump(
+            label_weights,
+            os.path.join("DATA/Validation/", prefix + "_weights.pkl")
+        )
 
     log.log("Done splitting data!")
 

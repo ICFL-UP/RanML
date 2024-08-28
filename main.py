@@ -27,6 +27,8 @@ PREDICT = 0
 ROC = 0
 BEST = 0
 CM = 0
+SMOTE = 0
+CW = 0
 
 
 def main():
@@ -43,7 +45,7 @@ def main():
 
     prefix = os.path.basename(FILE)
     prefix = prefix[0:prefix.index("_")]
-
+    CW_arr = []
     print(datetime.now())
 
     # # STATS
@@ -62,6 +64,15 @@ def main():
         data_reader.splitTrainTestVal(FILE, prefix)
 
     log.log("Loading data ..")
+    if SMOTE:
+        prefix += "SMOTE"
+    if CW:
+        try:
+            CW_arr = joblib.load("DATA/Train/" + prefix + "_weights.pkl")
+        except Exception:
+            print("Error: No Weights found, --cw flag must have weights which are generated when -d flag is used and --cw")
+            sys.exit()
+
     X = {
         "TRAIN": joblib.load("DATA/Train/" + prefix + "_features.pkl"),
         "VAL": joblib.load("DATA/Validation/" + prefix + "_features.pkl"),
@@ -86,66 +97,79 @@ def main():
     if TRAIN:
         # Classifier Training
         log.log("\n\nTraining Classifiers ...")
+
         if "RF" in MODEL_LIST:
             try:
-                classifiers.randomForrest(X["TRAIN"], Y["TRAIN"], prefix)
-            except Exception:
+                if CW:
+                    classifiers.randomForrest(X["TRAIN"], Y["TRAIN"], prefix, CW=CW_arr)
+                else:
+                    classifiers.randomForrest(X["TRAIN"], Y["TRAIN"], prefix)
+
+            except Exception as e:
                 print(traceback.print_exc())
+                log.log(e)
                 log.log("\n\n\n\n\nERROR in training of RF\n\n\n\n")
 
         if "GBT" in MODEL_LIST:
             try:
                 classifiers.gradientBoost(X["TRAIN"], Y["TRAIN"], prefix)
-            except Exception:
+            except Exception as e:
                 print(traceback.print_exc())
+                log.log(e)
                 log.log("\n\n\n\n\nERROR in training of DT\n\n\n\n")
 
         if "AB" in MODEL_LIST:
             try:
                 classifiers.adaBoost(X["TRAIN"], Y["TRAIN"], prefix)
-            except Exception:
+            except Exception as e:
                 print(traceback.print_exc())
+                log.log(e)
                 log.log("\n\n\n\n\nERROR in training of AB\n\n\n\n")
 
         if "KNN" in MODEL_LIST:
             try:
                 classifiers.knn(X["TRAIN"], Y["TRAIN"], prefix)
-            except Exception:
+            except Exception as e:
                 print(traceback.print_exc())
+                log.log(e)
                 log.log("\n\n\n\n\nERROR in training of KNN\n\n\n\n")
 
         if "DT" in MODEL_LIST:
             try:
-                classifiers.decisionTree(X["TRAIN"], Y["TRAIN"], prefix)
-            except Exception:
+                if CW:
+                    classifiers.decisionTree(X["TRAIN"], Y["TRAIN"], prefix, CW=CW_arr)
+                else:
+                    classifiers.decisionTree(X["TRAIN"], Y["TRAIN"], prefix)
+            except Exception as e:
                 print(traceback.print_exc())
+                log.log(e)
                 log.log("\n\n\n\n\nERROR in training of DT\n\n\n\n")
 
         if "NB" in MODEL_LIST:
             try:
-                le = LabelEncoder()
-                y_train = le.fit_transform(Y["TRAIN"])
-                classifiers.naiveBayes(X["TRAIN"], y_train, prefix)
-            except Exception:
+                classifiers.naiveBayes(X["TRAIN"], Y["TRAIN"], prefix)
+            except Exception as e:
                 print(traceback.print_exc())
+                log.log(e)
                 log.log("\n\n\n\n\nERROR in training of NB\n\n\n\n")
 
         if "XGB" in MODEL_LIST:
             try:
-                le = LabelEncoder()
-                y_train = le.fit_transform(Y["TRAIN"])
-                classifiers.xgboost(X["TRAIN"], y_train, prefix)
-            except Exception:
+                classifiers.xgboost(X["TRAIN"], Y["TRAIN"], prefix)
+            except Exception as e:
                 print(traceback.print_exc())
+                log.log(e)
                 log.log("\n\n\n\n\nERROR in training of XGB\n\n\n\n")
 
         if "LR" in MODEL_LIST:
             try:
-                le = LabelEncoder()
-                y_train = le.fit_transform(Y["TRAIN"])
-                classifiers.logisticRegression(X["TRAIN"], y_train, prefix)
-            except Exception:
+                if CW:
+                    classifiers.logisticRegression(X["TRAIN"], Y["TRAIN"], prefix, CW=CW_arr)
+                else:
+                    classifiers.logisticRegression(X["TRAIN"], Y["TRAIN"], prefix)
+            except Exception as e:
                 print(traceback.print_exc())
+                log.log(e)
                 log.log("\n\n\n\n\nERROR in training of LR\n\n\n\n")
 
         if "KM" in MODEL_LIST:
@@ -158,22 +182,28 @@ def main():
         if "NN" in MODEL_LIST:
             try:
                 classifiers.nn(X["TRAIN"], Y["TRAIN"], prefix)
-            except Exception:
+            except Exception as e:
                 print(traceback.print_exc())
+                log.log(e)
                 log.log("\n\n\n\n\nERROR in training of NN\n\n\n\n")
 
         if "SVM" in MODEL_LIST:
             try:
-                classifiers.svm(X["TRAIN"], Y["TRAIN"], prefix)
-            except Exception:
+                if CW:
+                    classifiers.svm(X["TRAIN"], Y["TRAIN"], prefix, CW=CW_arr)
+                else:
+                    classifiers.svm(X["TRAIN"], Y["TRAIN"], prefix)
+            except Exception as e:
                 print(traceback.print_exc())
+                log.log(e)
                 log.log("\n\n\n\n\nERROR in training of SVM\n\n\n\n")
 
         if "BAG" in MODEL_LIST:
             try:
                 classifiers.bagging(X["TRAIN"], Y["TRAIN"], prefix)
-            except Exception:
+            except Exception as e:
                 print(traceback.print_exc())
+                log.log(e)
                 log.log("\n\n\n\n\nERROR in training of Bagging\n\n\n\n")
 
     # ___________________________________________________________________________
@@ -182,7 +212,7 @@ def main():
         log.log("\n\nPREDICTING ...\n\n")
         results = []
         models = {}
-        le = LabelEncoder()
+        # le = LabelEncoder()
         for mdl in MODEL_LIST:
             models[mdl + "_" + prefix] = joblib.load(
                 "Models/{}_{}_model.pkl".format(mdl, prefix)
@@ -331,9 +361,9 @@ if __name__ == "__main__":
         + Color.GREEN
         + "Ran"
         + Color.BLUE
-        + "For"
+        + "M"
         + Color.RED
-        + "Red\n\n"
+        + "L\n\n"
         + Color.END
     )
     if len(sys.argv[1:]) == 0:
@@ -345,17 +375,17 @@ if __name__ == "__main__":
         "-d",
         "--data",
         action="store_true",
-        help="Preprocess the data from the CSV file",
+        help="Preprocess the data from the CSV file, requires -i flag",
     )
     parser.add_option(
-        "-t", "--train", 
-        action="store_true", 
-        help="Train the models")
+        "-t", "--train",
+        action="store_true",
+        help="Train the models, can be used with -m to specify the models to train")
     parser.add_option(
         "-p",
         "--predict",
         action="store_true",
-        help="Predict from the trained models"
+        help="Predict from the trained models, can be used with -m to specify the models to predict"
     )
     parser.add_option(
         "-r",
@@ -374,6 +404,16 @@ if __name__ == "__main__":
         "--confusion",
         action="store_true",
         help="Produce the Confusion matrix image for the models",
+    )
+    parser.add_option(
+        "--smote",
+        action="store_true",
+        help="Use the dataset that SMOTE was performed on",
+    )
+    parser.add_option(
+        "--cw",
+        action="store_true",
+        help="Use Class Weights for DT, RF, SVM, LR",
     )
     parser.add_option(
         "-i", "--input", dest="input",
@@ -399,6 +439,10 @@ if __name__ == "__main__":
         DATA = 1
     if options.train is not None:
         TRAIN = 1
+    if options.smote is not None:
+        SMOTE = 1
+    if options.cw is not None:
+        CW = 1
     if options.predict is not None:
         PREDICT = 1
     if options.roc is not None:
@@ -445,8 +489,14 @@ if __name__ == "__main__":
     print("Your choices: ")
     print("Data: ", Color.GREEN + "True" + Color.END if DATA == 1 else "False")
     print(
-        "Train: ", Color.GREEN + "True" + 
+        "Train: ", Color.GREEN + "True" +
         Color.END if TRAIN == 1 else "False")
+    print(
+        "SMOTE: ", Color.GREEN + "True" +
+        Color.END if SMOTE == 1 else "False")
+    print(
+        "Class Weight: ", Color.GREEN + "True" +
+        Color.END if CW == 1 else "False")
     print(
         "Predict: ", Color.GREEN + "True" +
         Color.END if PREDICT == 1 else "False")
@@ -464,6 +514,10 @@ if __name__ == "__main__":
                 + str(DATA)
                 + " Train: "
                 + str(TRAIN)
+                + " SMOTE: "
+                + str(SMOTE)
+                + " Class Weight: "
+                + str(CW)
                 + ", Predict: "
                 + str(PREDICT)
                 + ", ROC: "
@@ -485,6 +539,10 @@ if __name__ == "__main__":
             + str(DATA)
             + " Train: "
             + str(TRAIN)
+            + " SMOTE: "
+            + str(SMOTE)
+            + " Class Weight: "
+            + str(CW)
             + ", Predict: "
             + str(PREDICT)
             + ", ROC: "
