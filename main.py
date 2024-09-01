@@ -4,7 +4,9 @@ from log import Color
 from optparse import OptionParser
 import os
 
-# Globals
+### 1 = Malicious 0 = Benign
+
+### Globals
 FILE = ""
 # MODEL_LIST = ['RF','GBT', 'AB', 'KNN', 'DT', 'NB', 'LR', 'XGB', 'NN', 'SVM']
 MODEL_LIST = [
@@ -61,7 +63,7 @@ def main():
 
     if DATA:
         log.log("Preparing data splitting ...")
-        data_reader.splitTrainTestVal(FILE, prefix)
+        prefix = data_reader.splitTrainTestVal(FILE, prefix)
 
     log.log("Loading data ..")
     if SMOTE:

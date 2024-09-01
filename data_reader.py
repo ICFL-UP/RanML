@@ -107,7 +107,7 @@ def splitTrainTestVal(filename, prefix):
     class_weight = False
     convert = input(
         "Do you want to "
-        + log.Color.CYAN
+        + log.Color.RED + log.Color.UNDERLINE
         + "RE-BALANCE "
         + log.Color.END
         + "the dataset? (Y/N)?: "
@@ -128,7 +128,7 @@ def splitTrainTestVal(filename, prefix):
     if class_weight: 
         log.log("Performing class weighting ...")
         label_weights = compute_class_weight(class_weight="balanced", classes=np.unique(labels), y=labels)
-        log.log("Class weights: ", label_weights)
+        log.log("Class weights: " + str(label_weights))
         prefix += "CW"
 
     if smote:
@@ -137,6 +137,21 @@ def splitTrainTestVal(filename, prefix):
         features, labels = smoteObj.fit_resample(features, labels)
         prefix += "SMOTE"
         stats(features, labels)
+
+
+    convert = input(
+        "Do you want to "
+        + log.Color.GREEN
+        + "SAVE "
+        + log.Color.END
+        + "this new dataset as CSV? (Y/N)?: "
+    )
+    if convert == "Y" or convert == "y":
+        ndf = pd.DataFrame(data=features, columns=df.columns.tolist())
+        ndf["label"] = list(labels)
+        fname = "Datasets/"+prefix+"_MOD_Dataset.csv" 
+        ndf.to_csv(fname, index=False)
+        log.log("Saved to: " + fname)
 
     log.log("Splitting data for training 60%")
     train, test, train_labels, lab = train_test_split(
@@ -184,7 +199,7 @@ def splitTrainTestVal(filename, prefix):
         )
 
     log.log("Done splitting data!")
-
+    return prefix
 
 def stats(data, labels):
     d = {
