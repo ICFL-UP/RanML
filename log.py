@@ -6,7 +6,7 @@ def log(text, p=True):
     if p:
         print(text)
     with open('out.log', 'a') as f:
-        f.write("\n"+str(datetime.now()) + " -> " + text)
+        f.write("\n"+str(datetime.now()) + " -> " + str(text))
 
 class Color:
     HEADER = '\033[95m'

@@ -33,6 +33,7 @@ from sklearn.preprocessing import StandardScaler
 
 CV = 10
 
+### 1 = Ransomware; 0 = Benign
 
 def print_results(results, classifier):
     means = results.cv_results_["mean_test_score"]
@@ -48,7 +49,7 @@ def evaluate_model(name, model, features, labels, prefix):
     start = time.time()
     pred = model.predict(features)
     end = time.time()
-    accuracy = round(accuracy_score(labels, pred), 4)
+    accuracy = round(accuracy_score(labels, pred), 4)*100
     if name in ["XGB_" + prefix, "NB_" + prefix, "LR_" + prefix]:
         precision = round(precision_score(labels, pred, pos_label=1), 4)
         recall = round(recall_score(labels, pred, pos_label=1), 4)
@@ -57,18 +58,20 @@ def evaluate_model(name, model, features, labels, prefix):
         if name in ["KM_" + prefix]:
             precision = round(
                 precision_score(
-                    labels, pred, pos_label="M", average="micro"), 4
+                    labels, pred, pos_label=1, average="micro"), 4
             )
             recall = round(
-                recall_score(labels, pred, pos_label="M", average="micro"), 4
+                recall_score(labels, pred, pos_label=1, average="micro"), 4
             )
             f1 = round(
-                f1_score(labels, pred, pos_label="M", average="micro"), 4
+                f1_score(labels, pred, pos_label=1, average="micro"), 4
             )
         else:
-            precision = round(precision_score(labels, pred, pos_label="M"), 4)
-            recall = round(recall_score(labels, pred, pos_label="M"), 4)
-            f1 = round(f1_score(labels, pred, pos_label="M"), 4)
+            precision = round(precision_score(labels, pred, pos_label=1), 4)
+            recall = round(recall_score(labels, pred, pos_label=1), 4)
+            f1 = round(f1_score(labels, pred, pos_label=1), 4)
+    print(model.predict_proba(features).shape)
+    print(labels.shape)
     auc = round(roc_auc_score(labels, model.predict_proba(features)[:, 1]), 4)
     logloss = round(log_loss(labels, model.predict_proba(features)), 4)
 
@@ -83,7 +86,7 @@ def evaluate_model(name, model, features, labels, prefix):
         + "\n\n{} -- ".format(name)
         + log.Color.END
         + "\nTP: {} \nTN: {} \nFP: {} \nFN: {} \nRecall: {} \nPrecision: {} \
-            \nF1-Score: {}  \nAUC: {} \nLogLoss: {} \nLatency: {}ms \nNum: {} \
+            \nF1-Score: {}  \nAUC: {} \nLogLoss: {} \nLatency: {} ms \
             \nAccuracy: {}\n\n".format(
             TP[0],
             TN[0],
@@ -95,7 +98,6 @@ def evaluate_model(name, model, features, labels, prefix):
             auc,
             logloss,
             lat,
-            len(pred),
             accuracy,
         )
     )
@@ -114,7 +116,6 @@ def evaluate_model(name, model, features, labels, prefix):
         auc,
         logloss,
         lat,
-        len(pred),
         accuracy,
     ]
 
@@ -212,7 +213,7 @@ def bagging(train_data, correct_class, nlp):
         cv = GridSearchCV(classifier, param, cv=CV, verbose=10)
         cv.fit(train_data, correct_class.to_numpy())
         print_results(cv, "Bagging + {}".format(nlp))
-        joblib.dump(cv.best_estimator_, "Models/BC_{}_model.pkl".format(nlp))
+        joblib.dump(cv.best_estimator_, "Models/BAG_{}_model.pkl".format(nlp))
         log.log(
             "Train time for Bagging + {}: ".format(nlp)
             + str((time.time() - start_time) / 60)

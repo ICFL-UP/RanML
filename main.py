@@ -31,6 +31,7 @@ BEST = 0
 CM = 0
 SMOTE = 0
 CW = 0
+NLP = 0
 
 
 def main():
@@ -74,6 +75,13 @@ def main():
         except Exception:
             print("Error: No Weights found, --cw flag must have weights which are generated when -d flag is used and --cw")
             sys.exit()
+    
+    if NLP == 1:
+        prefix += "TFIDF"
+    if NLP == 2:
+        prefix += "BOW"
+    if NLP == 3:
+        prefix += "DOC2VEC"
 
     X = {
         "TRAIN": joblib.load("DATA/Train/" + prefix + "_features.pkl"),
@@ -214,39 +222,32 @@ def main():
         log.log("\n\nPREDICTING ...\n\n")
         results = []
         models = {}
+        failed = ""
         # le = LabelEncoder()
         for mdl in MODEL_LIST:
-            models[mdl + "_" + prefix] = joblib.load(
-                "Models/{}_{}_model.pkl".format(mdl, prefix)
-            )
-            if mdl in ["LR", "NB", "XGB", "KM"]:
-                y_val = [1 if x == "M" else 0 for x in Y["VAL"]]
-                results.append(
-                    classifiers.evaluate_model(
-                        mdl + "_" + prefix,
-                        models[mdl + "_" + prefix],
-                        X["VAL"],
-                        y_val,
-                        prefix,
-                    )
+            try:
+                models[mdl + "_" + prefix] = joblib.load(
+                    "Models/{}_{}_model.pkl".format(mdl, prefix)
                 )
-            else:
+
                 results.append(
                     classifiers.evaluate_model(
-                        mdl + "_" + prefix,
+                        mdl,
                         models[mdl + "_" + prefix],
                         X["VAL"],
                         Y["VAL"],
                         prefix,
                     )
                 )
+            except Exception as e:
+                print(traceback.print_exc())
+                log.log("\n\nFailed to load model " + mdl + " " + prefix)
+                results.append([mdl]+[""]*12)
+                failed += "\n\nFailed to load model " + mdl + " " + prefix
+                continue
         from tabulate import tabulate
-
-        log.log(
-            "\n\n"
-            + tabulate(
-                results,
-                headers=[
+        import numpy as np
+        results.insert(0, [
                     "Name",
                     "TP",
                     "TN",
@@ -258,36 +259,47 @@ def main():
                     "AUC",
                     "LogLoss",
                     "Latency(ms)",
-                    "Num",
                     "Accuracy",
-                ],
+                ],)
+        # results = np.array(results, dtype=object).transpose()
+        log.log(
+            "\n\n ====== " + prefix + " ======\n\n"
+            + tabulate(
+                results, headers="firstrow", tablefmt='latex'
             )
             + "\n\n\n"
         )
+        log.log("\n____FAILED_____\n"+failed)
 
     # ___________________________________________________________________________
     if ROC:
         # ROC Curve
+        if not os.path.exists("ROC"):
+            os.mkdir("ROC")
         print("\n\n\nGenerating ROC\n\n")
         models = {}
         for mdl in MODEL_LIST:
-            models[mdl + "_" + prefix] = joblib.load(
-                "Models/{}_{}_model.pkl".format(mdl, prefix)
-            )
+            try:
+                models[mdl + "_" + prefix] = joblib.load(
+                    "Models/{}_{}_model.pkl".format(mdl, prefix)
+                )
+            except Exception:
+                log.log("\n\nFailed to load model " + mdl + " " + prefix)
+                continue
+
         fig = plt.figure(figsize=(7, 7), dpi=300)
         axes = fig.gca()
+        axes.set_title(prefix)
         for x in MODEL_LIST:
-            if x in ["LR", "NB", "XGB", "KM"]:
-                y_test = [1 if x == "M" else 0 for x in Y["VAL"]]
-                RocCurveDisplay.from_estimator(
-                    models[x + "_" + prefix], X["VAL"], y_test, ax=axes
-                )
-            else:
+            try:
                 RocCurveDisplay.from_estimator(
                     models[x + "_" + prefix], X["VAL"], Y["VAL"], ax=axes
                 )
+            except Exception:
+                log.log("Failed to generate ROC for " + x)
+                continue
 
-        plt.savefig(prefix + "_ROC.png")
+        plt.savefig("ROC/" + prefix + "_ROC.png")
 
     # ___________________________________________________________________________
     if CM:
@@ -295,26 +307,29 @@ def main():
         print("\n\n\nGenerating Confusion Matrix\n\n\n")
         models = {}
         for mdl in MODEL_LIST:
-            models[mdl + "_" + prefix] = joblib.load(
-                "Models/{}_{}_model.pkl".format(mdl, prefix)
-            )
+            try:
+                models[mdl + "_" + prefix] = joblib.load(
+                    "Models/{}_{}_model.pkl".format(mdl, prefix)
+                )
+            except Exception:
+                log.log("\n\nFailed to load model " + mdl + " " + prefix)
+                continue
 
         if not os.path.exists("CM"):
             os.mkdir("CM")
         for x in MODEL_LIST:
-            fig = plt.figure(figsize=(7, 7), dpi=300)
-            axes = fig.gca()
-            if x in ["LR", "NB", "XGB", "KM"]:
-                y_test = [1 if x == "M" else 0 for x in Y["VAL"]]
-                ConfusionMatrixDisplay.from_estimator(
-                    models[x + "_" + prefix], X["VAL"], y_test, ax=axes
-                )
-            else:
+            try:
+                fig = plt.figure(figsize=(7, 7), dpi=300)
+                axes = fig.gca()
+                
                 ConfusionMatrixDisplay.from_estimator(
                     models[x + "_" + prefix], X["VAL"], Y["VAL"], ax=axes
                 )
 
-            plt.savefig("CM/" + x + "_" + prefix + ".png")
+                plt.savefig("CM/" + x + "_" + prefix + ".png")
+            except Exception:
+                log.log("\n\nFailed to generate CM for " + mdl + " " + prefix)
+                continue
 
     # ___________________________________________________________________________
     if BEST:
@@ -418,6 +433,21 @@ if __name__ == "__main__":
         help="Use Class Weights for DT, RF, SVM, LR",
     )
     parser.add_option(
+        "--tfidf",
+        action="store_true",
+        help="Use TFIDF training data based on input file",
+    )
+    parser.add_option(
+        "--bow",
+        action="store_true",
+        help="Use Bag of Words training data based on input file",
+    )
+    parser.add_option(
+        "--doc2vec",
+        action="store_true",
+        help="Use Doc2Vec training data based on input file",
+    )
+    parser.add_option(
         "-i", "--input", dest="input",
         help="Specify the input file")
     parser.add_option(
@@ -445,6 +475,12 @@ if __name__ == "__main__":
         SMOTE = 1
     if options.cw is not None:
         CW = 1
+    if options.tfidf is not None:
+        NLP = 1
+    if options.bow is not None:
+        NLP = 2
+    if options.doc2vec is not None:
+        NLP = 3
     if options.predict is not None:
         PREDICT = 1
     if options.roc is not None:
@@ -487,7 +523,7 @@ if __name__ == "__main__":
     ):
         print("No valid arguments passed, please use -h or --help for help")
         sys.exit()
-
+    
     print("Your choices: ")
     print("Data: ", Color.GREEN + "True" + Color.END if DATA == 1 else "False")
     print(
@@ -499,6 +535,8 @@ if __name__ == "__main__":
     print(
         "Class Weight: ", Color.GREEN + "True" +
         Color.END if CW == 1 else "False")
+    print(
+        "NLP: ", "False" if NLP == 0 else Color.GREEN + "TFIDF" if NLP == 1 else Color.GREEN + "BOW" if NLP == 2 else Color.GREEN + "DOC2VEC", Color.END)
     print(
         "Predict: ", Color.GREEN + "True" +
         Color.END if PREDICT == 1 else "False")

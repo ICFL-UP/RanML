@@ -8,12 +8,17 @@ import log
 from sklearn.utils.class_weight import compute_class_weight
 import numpy as np
 from imblearn.over_sampling import SMOTE
+from gensim.models.doc2vec import Doc2Vec
+from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
+import time
+from joblib import parallel_backend
+import sys
 
 
 def splitTrainTestVal(filename, prefix):
     log.log("Reading data from CSV ...")
 
-    df = pd.read_csv(filename, index_col="Unnamed: 0")
+    df = pd.read_csv(filename, index_col=False)
     df = df = df[df['label'].notna()]
     print(
         "\n\nNOTE: There must be a 'label' column, "
@@ -21,6 +26,8 @@ def splitTrainTestVal(filename, prefix):
     )
     # print("Dropping columns ..")
     # df = df.drop(columns=["SHA256", "label", "category"])
+    print("Data Label Counts:")
+    print(df["label"].value_counts())
     delete = True
     while delete:
         print(df.head())
@@ -138,7 +145,6 @@ def splitTrainTestVal(filename, prefix):
         prefix += "SMOTE"
         stats(features, labels)
 
-
     convert = input(
         "Do you want to "
         + log.Color.GREEN
@@ -152,6 +158,46 @@ def splitTrainTestVal(filename, prefix):
         fname = "Datasets/"+prefix+"_MOD_Dataset.csv" 
         ndf.to_csv(fname, index=False)
         log.log("Saved to: " + fname)
+
+    nlp = input(
+        "Do you want to perform "
+        + log.Color.RED + log.Color.UNDERLINE
+        + "NLP "
+        + log.Color.END
+        + "on a field on the dataset? (Y/N)?: "
+    )
+    if nlp == "Y" or nlp == "y":
+        column = 0
+        for c in df.columns:
+            print(str(column) + ": " + c)
+            column += 1
+        column = input(
+            "Select a column (e.g. 1) to perform NLP: ")
+        if column != "":
+            i = 0
+            print("0: TF-IDF \n1: Bag of Words \n2: Doc2Vec")
+            selection = input("Select an option (e.g. 1): ")
+            for c in df.columns:
+                if str(i) in column.split(",") or column == "a":
+                    df[c] = df[c].str.replace('\n', ' ')
+                    if selection == "0":
+                        prefix += "TFIDF"
+                        features = TF_IDF(df[c])
+                        print(features.shape)
+                        print(labels.shape)
+                    if selection == "1":
+                        prefix += "BOW"
+                        features = BagOfWords(df[c])
+                    if selection == "2":
+                        from gensim.models.doc2vec import TaggedDocument
+                        prefix += "DOC2VEC"
+                        preDoc = Doc_to_Vec([TaggedDocument(doc, [i]) for i, doc in enumerate(df[c])])
+                        features = [preDoc.infer_vector(x.split()) for x in df[c]]
+                i += 1
+            # df["label"] = list(labels)
+            # fname = "Datasets/"+prefix+"_MOD_Dataset.csv"
+            # df.to_csv(fname, index=False)
+            # log.log("Saved to: " + fname)
 
     log.log("Splitting data for training 60%")
     train, test, train_labels, lab = train_test_split(
@@ -198,6 +244,7 @@ def splitTrainTestVal(filename, prefix):
             os.path.join("DATA/Validation/", prefix + "_weights.pkl")
         )
 
+
     log.log("Done splitting data!")
     return prefix
 
@@ -208,3 +255,33 @@ def stats(data, labels):
         "count": labels.value_counts(),
     }
     return d
+
+
+def TF_IDF(train_docs):
+    log.log("Processing TF-IDF ...")
+    X = None
+    with parallel_backend('threading', n_jobs=os.cpu_count()):
+        start_time = time.time()
+        vectorizer = TfidfVectorizer(token_pattern=r"\S{2,}")
+        X = vectorizer.fit_transform(train_docs)
+        log.log("Fit time for TF-IDF: " + str((time.time() - start_time) / 60) + " min")
+    return X
+
+
+def BagOfWords(train_docs):
+    log.log("Processing Bag-ofWords ...")
+    start_time = time.time()
+    vectorizer = CountVectorizer()
+    X = vectorizer.fit_transform(train_docs)
+    log.log("Fit time for Bag-of-Words: " + str((time.time() - start_time) / 60) + " min")
+    return X
+
+
+def Doc_to_Vec(train_docs):
+    log.log("Processing Doc2Vec ...")
+    start_time = time.time()
+    model = Doc2Vec(train_docs, vector_size=1000, window=50, min_count=1, dm=0, workers=os.cpu_count())
+    model.build_vocab(train_docs)
+    model.train(train_docs, total_examples=model.corpus_count, epochs=model.epochs)
+    log.log("Fit time for Doc2Vec: " + str((time.time() - start_time) / 60) + " min")
+    return model
