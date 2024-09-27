@@ -183,13 +183,13 @@ def splitTrainTestVal(filename, prefix):
                     df[c] = df[c].str.replace('\n', ' ')
                     if selection == "0":
                         prefix += "TFIDF"
-                        tf = TF_IDF(df[c])
+                        tf = TF_IDF(df[c]).toarray()
                         spca = SparsePCA()
                         features = spca.fit_transform(tf)
                     if selection == "1":
                         prefix += "BOW"
                         bw = BagOfWords(df[c])
-                        spca = SparsePCA()
+                        spca = SparsePCA().toarray()
                         features = spca.fit_transform(bw)
                     if selection == "2":
                         from gensim.models.doc2vec import TaggedDocument
