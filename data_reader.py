@@ -182,12 +182,10 @@ def splitTrainTestVal(filename, prefix):
                     df[c] = df[c].str.replace('\n', ' ')
                     if selection == "0":
                         prefix += "TFIDF"
-                        features = TF_IDF(df[c])
-                        print(features.shape)
-                        print(labels.shape)
+                        features = TF_IDF(df[c]).todense()
                     if selection == "1":
                         prefix += "BOW"
-                        features = BagOfWords(df[c])
+                        features = BagOfWords(df[c]).todense()
                     if selection == "2":
                         from gensim.models.doc2vec import TaggedDocument
                         prefix += "DOC2VEC"

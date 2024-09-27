@@ -50,12 +50,14 @@ def evaluate_model(name, model, features, labels, prefix):
     pred = model.predict(features)
     end = time.time()
     accuracy = round(accuracy_score(labels, pred), 4)*100
+    auc = "-"
+    logloss = "-"
     if name in ["XGB_" + prefix, "NB_" + prefix, "LR_" + prefix]:
         precision = round(precision_score(labels, pred, pos_label=1), 4)
         recall = round(recall_score(labels, pred, pos_label=1), 4)
         f1 = round(f1_score(labels, pred, pos_label=1), 4)
     else:
-        if name in ["KM_" + prefix]:
+        if name in ["KM"]:
             precision = round(
                 precision_score(
                     labels, pred, pos_label=1, average="micro"), 4
@@ -66,14 +68,14 @@ def evaluate_model(name, model, features, labels, prefix):
             f1 = round(
                 f1_score(labels, pred, pos_label=1, average="micro"), 4
             )
+            
         else:
             precision = round(precision_score(labels, pred, pos_label=1), 4)
             recall = round(recall_score(labels, pred, pos_label=1), 4)
             f1 = round(f1_score(labels, pred, pos_label=1), 4)
-    print(model.predict_proba(features).shape)
-    print(labels.shape)
-    auc = round(roc_auc_score(labels, model.predict_proba(features)[:, 1]), 4)
-    logloss = round(log_loss(labels, model.predict_proba(features)), 4)
+    
+            auc = round(roc_auc_score(labels, model.predict_proba(features)[:, 1]), 4)
+            logloss = round(log_loss(labels, model.predict_proba(features)), 4)
 
     cm = confusion_matrix(labels, pred)
     FP = cm.sum(axis=0) - np.diag(cm)
