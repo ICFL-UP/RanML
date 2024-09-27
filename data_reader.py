@@ -14,7 +14,7 @@ from sklearn.pipeline import Pipeline
 import time
 from joblib import parallel_backend
 import sys
-
+from sklearn.decomposition import SparsePCA
 
 def splitTrainTestVal(filename, prefix):
     log.log("Reading data from CSV ...")
@@ -183,10 +183,14 @@ def splitTrainTestVal(filename, prefix):
                     df[c] = df[c].str.replace('\n', ' ')
                     if selection == "0":
                         prefix += "TFIDF"
-                        features = TF_IDF(df[c]).toarray()
+                        tf = TF_IDF(df[c])
+                        spca = SparsePCA()
+                        features = spca.fit_transform(tf)
                     if selection == "1":
                         prefix += "BOW"
-                        features = BagOfWords(df[c]).toarray()
+                        bw = BagOfWords(df[c])
+                        spca = SparsePCA()
+                        features = spca.fit_transform(bw)
                     if selection == "2":
                         from gensim.models.doc2vec import TaggedDocument
                         prefix += "DOC2VEC"

@@ -317,19 +317,48 @@ def main():
 
         if not os.path.exists("CM"):
             os.mkdir("CM")
+
+        # INDIVIDUAL
         for x in MODEL_LIST:
             try:
                 fig = plt.figure(figsize=(7, 7), dpi=300)
                 axes = fig.gca()
-                
                 ConfusionMatrixDisplay.from_estimator(
                     models[x + "_" + prefix], X["VAL"], Y["VAL"], ax=axes
                 )
-
                 plt.savefig("CM/" + x + "_" + prefix + ".png")
             except Exception:
                 log.log("\n\nFailed to generate CM for " + mdl + " " + prefix)
                 continue
+
+        # ALL
+        figure, axis = plt.subplots(3, 4, dpi=300)
+        r = 0
+        c = 0
+        for x in MODEL_LIST:
+            try:
+                
+                ConfusionMatrixDisplay.from_estimator(
+                    models[x + "_" + prefix], X["VAL"], Y["VAL"], ax=axis[r, c], colorbar=False, display_labels=["B", "R"]
+                )
+                axis[r, c].set_title(x)
+                c += 1
+                if c == 4:
+                    r += 1
+                    c = 0
+                
+            except Exception as e:
+                c += 1
+                if c == 4:
+                    r += 1
+                    c = 0
+            
+                print(e)
+                log.log("\n\nFailed to generate CM for " + mdl + " " + prefix)
+                continue
+        figure.suptitle(prefix + " Confusion Matrices")
+        figure.tight_layout()
+        plt.savefig("CM/" + prefix + ".png")
 
     # ___________________________________________________________________________
     if BEST:
