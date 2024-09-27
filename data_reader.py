@@ -264,7 +264,7 @@ def TF_IDF(train_docs):
         # pipe = Pipeline([('count', CountVectorizer()), ('tfid', TfidfTransformer())]).fit(train_docs)
         # X = pipe.fit_transform(train_docs)
         vectorizer = TfidfVectorizer(token_pattern=r"\S{2,}")
-        X = vectorizer.fit_transform(train_docs).toarray()
+        X = vectorizer.fit_transform(train_docs)
         log.log("Fit time for TF-IDF: " + str((time.time() - start_time) / 60) + " min")
     return X
 
@@ -273,7 +273,7 @@ def BagOfWords(train_docs):
     log.log("Processing Bag-ofWords ...")
     start_time = time.time()
     vectorizer = CountVectorizer()
-    X = vectorizer.fit_transform(train_docs).toarray()
+    X = vectorizer.fit_transform(train_docs)
     log.log("Fit time for Bag-of-Words: " + str((time.time() - start_time) / 60) + " min")
     return X
 
