@@ -9,7 +9,8 @@ from sklearn.utils.class_weight import compute_class_weight
 import numpy as np
 from imblearn.over_sampling import SMOTE
 from gensim.models.doc2vec import Doc2Vec
-from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer, TfidfTransformer
+from sklearn.pipeline import Pipeline
 import time
 from joblib import parallel_backend
 import sys
@@ -182,10 +183,10 @@ def splitTrainTestVal(filename, prefix):
                     df[c] = df[c].str.replace('\n', ' ')
                     if selection == "0":
                         prefix += "TFIDF"
-                        features = TF_IDF(df[c]).todense()
+                        features = TF_IDF(df[c]).toarray()
                     if selection == "1":
                         prefix += "BOW"
-                        features = BagOfWords(df[c]).todense()
+                        features = BagOfWords(df[c]).toarray()
                     if selection == "2":
                         from gensim.models.doc2vec import TaggedDocument
                         prefix += "DOC2VEC"
@@ -260,8 +261,10 @@ def TF_IDF(train_docs):
     X = None
     with parallel_backend('threading', n_jobs=os.cpu_count()):
         start_time = time.time()
+        # pipe = Pipeline([('count', CountVectorizer()), ('tfid', TfidfTransformer())]).fit(train_docs)
+        # X = pipe.fit_transform(train_docs)
         vectorizer = TfidfVectorizer(token_pattern=r"\S{2,}")
-        X = vectorizer.fit_transform(train_docs)
+        X = vectorizer.fit_transform(train_docs).toarray()
         log.log("Fit time for TF-IDF: " + str((time.time() - start_time) / 60) + " min")
     return X
 
@@ -270,7 +273,7 @@ def BagOfWords(train_docs):
     log.log("Processing Bag-ofWords ...")
     start_time = time.time()
     vectorizer = CountVectorizer()
-    X = vectorizer.fit_transform(train_docs)
+    X = vectorizer.fit_transform(train_docs).toarray()
     log.log("Fit time for Bag-of-Words: " + str((time.time() - start_time) / 60) + " min")
     return X
 
