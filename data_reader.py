@@ -184,13 +184,17 @@ def splitTrainTestVal(filename, prefix):
                     if selection == "0":
                         prefix += "TFIDF"
                         tf = TF_IDF(df[c]).toarray()
+                        start_time = time.time()
                         spca = SparsePCA()
                         features = spca.fit_transform(tf)
+                        log.log("Fit time for SPCA for TFIDF: " + str((time.time() - start_time) / 60) + " min")
                     if selection == "1":
                         prefix += "BOW"
                         bw = BagOfWords(df[c])
+                        start_time = time.time()
                         spca = SparsePCA().toarray()
                         features = spca.fit_transform(bw)
+                        log.log("Fit time for SPCA for BOW: " + str((time.time() - start_time) / 60) + " min")
                     if selection == "2":
                         from gensim.models.doc2vec import TaggedDocument
                         prefix += "DOC2VEC"
