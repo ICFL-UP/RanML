@@ -319,17 +319,17 @@ def main():
             os.mkdir("CM")
 
         # INDIVIDUAL
-        for x in MODEL_LIST:
-            try:
-                fig = plt.figure(figsize=(7, 7), dpi=300)
-                axes = fig.gca()
-                ConfusionMatrixDisplay.from_estimator(
-                    models[x + "_" + prefix], X["VAL"], Y["VAL"], ax=axes
-                )
-                plt.savefig("CM/" + x + "_" + prefix + ".png")
-            except Exception:
-                log.log("\n\nFailed to generate CM for " + mdl + " " + prefix)
-                continue
+        # for x in MODEL_LIST:
+        #     try:
+        #         fig = plt.figure(figsize=(7, 7), dpi=300)
+        #         axes = fig.gca()
+        #         ConfusionMatrixDisplay.from_estimator(
+        #             models[x + "_" + prefix], X["VAL"], Y["VAL"], ax=axes
+        #         )
+        #         plt.savefig("CM/" + x + "_" + prefix + ".png")
+        #     except Exception:
+        #         log.log("\n\nFailed to generate CM for " + mdl + " " + prefix)
+        #         continue
 
         # ALL
         figure, axis = plt.subplots(3, 4, dpi=300)

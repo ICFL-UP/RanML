@@ -355,7 +355,7 @@ def kmeans(train_data, correct_class, nlp):
             "n_init": [5, 10, 15],
             "max_iter": [100, 200, 300, 400, 500],
             "tol": [0.0001, 0.001, 0.01],
-            "algorithm": ["auto", "full", "elkan"],
+            "algorithm": ["llyod", "full", "elkan"],
             "random_state": [0, 42, 100],
         }
 
