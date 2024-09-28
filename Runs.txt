@@ -39,9 +39,9 @@ python3.10 main.py -s -p -i Datasets/PMM_9_Process_Memory_of_Ransomware_versione
 python3.10 main.py -s -p -i Datasets/FOM_47_File_Operations_for_Ransomware_Detection.csv --smote
 python3.10 main.py -s -p -i Datasets/ROM_49_Registry_operations_for_Ransomware_Detection.csv --smote
 
-python3.10 main.py -s -p -i Datasets/PSM_MOD_Dataset.csv --tfidf | tee -a PSM.out &
-python3.10 main.py -s -p -i Datasets/PSM_MOD_Dataset.csv --bow | tee -a PSMBOW.out &
-python3.10 main.py -s -p -i Datasets/PSM_MOD_Dataset.csv --doc2vec | tee -a PSMD2V.out &
+python3.10 main.py -s -p -i Datasets/PSM_60_Ransomware_Detection_Using_Strings.csv --tfidf | tee -a PSM.out &
+python3.10 main.py -s -p -i Datasets/PSM_60_Ransomware_Detection_Using_Strings.csv --bow | tee -a PSMBOW.out &
+python3.10 main.py -s -p -i Datasets/PSM_60_Ransomware_Detection_Using_Strings.csv --doc2vec | tee -a PSMD2V.out &
 
 
 
@@ -67,4 +67,5 @@ python3.10 main.py -s -r -i Datasets/ROM_49_Registry_operations_for_Ransomware_D
 
 
  
- 
+ cat PEEM.out | grep -a "Train time"
+ du -h Models/*_PSM*
