@@ -171,3 +171,175 @@ Fitting 10 folds for each of 32 candidates, totalling 320 fits
 [CV 7/10; 9/32] START activation=tanh, alpha=0.05, hidden_layer_sizes=(10, 30, 10), learning_rate=constant, solver=sgd
 [CV 7/10; 6/32] END activation=tanh, alpha=0.0001, hidden_layer_sizes=(20,), learning_rate=constant, solver=adam;, score=0.907 total time=10.6min
 [CV 8/10; 9/32] START activation=tanh, alpha=0.05, hidden_layer_sizes=(10, 30, 10), learning_rate=constant, solver=sgd
+
+Welcome to [92mRan[94mM[91mL
+
+[0m
+Your choices: 
+Data:  False
+Train:  [92mTrue[0m
+SMOTE:  [92mTrue[0m
+Class Weight:  False
+NLP:  False [0m
+Predict:  False
+ROC:  False
+CM:  False
+BEST:  False
+Models:  ['SVM', 'NN', 'BAG']
+Please wait while things initialize ...
+2024-09-28 09:22:24.138220
+PMM Dataset stats - Category: Ransomware       9542
+Utilities         293
+Internet           81
+Graphics           63
+Office             57
+Games              49
+Music / Video      43
+Security           31
+Development        18
+Education           9
+Name: category, dtype: int64
+PMM Dataset stats - Label: 
+1    9542
+0     644
+Name: label, dtype: int64
+PMM Dataset stats - Shape: (10186, 10)
+Loading data ..
+Dataset TRAIN PMMSMOTE: 
+0    5725
+1    5725
+Name: label, dtype: int64
+Dataset VAL PMMSMOTE: 
+1    1909
+0    1908
+Name: label, dtype: int64
+Dataset TEST PMMSMOTE: 
+0    1909
+1    1908
+Name: label, dtype: int64
+
+
+Training Classifiers ...
+
+Training NN for PMMSMOTE...
+Fitting 10 folds for each of 32 candidates, totalling 320 fits
+[CV 1/10; 1/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(10, 30, 10), learning_rate=constant, solver=sgd
+[CV 2/10; 1/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(10, 30, 10), learning_rate=constant, solver=sgd
+[CV 3/10; 1/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(10, 30, 10), learning_rate=constant, solver=sgd
+[CV 4/10; 1/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(10, 30, 10), learning_rate=constant, solver=sgd
+[CV 5/10; 1/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(10, 30, 10), learning_rate=constant, solver=sgd
+[CV 6/10; 1/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(10, 30, 10), learning_rate=constant, solver=sgd
+[CV 7/10; 1/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(10, 30, 10), learning_rate=constant, solver=sgd
+[CV 8/10; 1/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(10, 30, 10), learning_rate=constant, solver=sgd
+[CV 9/10; 1/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(10, 30, 10), learning_rate=constant, solver=sgd
+[CV 10/10; 1/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(10, 30, 10), learning_rate=constant, solver=sgd
+[CV 1/10; 2/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(10, 30, 10), learning_rate=constant, solver=adam
+[CV 2/10; 2/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(10, 30, 10), learning_rate=constant, solver=adam
+[CV 3/10; 2/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(10, 30, 10), learning_rate=constant, solver=adam
+[CV 4/10; 2/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(10, 30, 10), learning_rate=constant, solver=adam
+[CV 5/10; 2/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(10, 30, 10), learning_rate=constant, solver=adam
+[CV 6/10; 2/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(10, 30, 10), learning_rate=constant, solver=adam
+[CV 7/10; 2/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(10, 30, 10), learning_rate=constant, solver=adam
+[CV 8/10; 2/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(10, 30, 10), learning_rate=constant, solver=adam
+[CV 9/10; 2/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(10, 30, 10), learning_rate=constant, solver=adam
+[CV 10/10; 2/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(10, 30, 10), learning_rate=constant, solver=adam
+[CV 1/10; 3/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(10, 30, 10), learning_rate=adaptive, solver=sgd
+[CV 2/10; 3/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(10, 30, 10), learning_rate=adaptive, solver=sgd
+[CV 3/10; 3/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(10, 30, 10), learning_rate=adaptive, solver=sgd
+[CV 4/10; 3/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(10, 30, 10), learning_rate=adaptive, solver=sgd
+[CV 5/10; 3/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(10, 30, 10), learning_rate=adaptive, solver=sgd
+[CV 6/10; 3/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(10, 30, 10), learning_rate=adaptive, solver=sgd
+[CV 7/10; 3/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(10, 30, 10), learning_rate=adaptive, solver=sgd
+[CV 8/10; 3/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(10, 30, 10), learning_rate=adaptive, solver=sgd
+[CV 9/10; 3/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(10, 30, 10), learning_rate=adaptive, solver=sgd
+[CV 10/10; 3/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(10, 30, 10), learning_rate=adaptive, solver=sgd
+[CV 1/10; 4/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(10, 30, 10), learning_rate=adaptive, solver=adam
+[CV 2/10; 4/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(10, 30, 10), learning_rate=adaptive, solver=adam
+[CV 3/10; 4/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(10, 30, 10), learning_rate=adaptive, solver=adam
+[CV 4/10; 4/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(10, 30, 10), learning_rate=adaptive, solver=adam
+[CV 5/10; 4/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(10, 30, 10), learning_rate=adaptive, solver=adam
+[CV 6/10; 4/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(10, 30, 10), learning_rate=adaptive, solver=adam
+[CV 7/10; 4/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(10, 30, 10), learning_rate=adaptive, solver=adam
+[CV 8/10; 4/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(10, 30, 10), learning_rate=adaptive, solver=adam
+[CV 9/10; 4/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(10, 30, 10), learning_rate=adaptive, solver=adam
+[CV 10/10; 4/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(10, 30, 10), learning_rate=adaptive, solver=adam
+[CV 1/10; 5/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(20,), learning_rate=constant, solver=sgd
+[CV 2/10; 5/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(20,), learning_rate=constant, solver=sgd
+[CV 3/10; 5/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(20,), learning_rate=constant, solver=sgd
+[CV 4/10; 5/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(20,), learning_rate=constant, solver=sgd
+[CV 5/10; 5/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(20,), learning_rate=constant, solver=sgd
+[CV 6/10; 5/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(20,), learning_rate=constant, solver=sgd
+[CV 7/10; 5/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(20,), learning_rate=constant, solver=sgd
+[CV 8/10; 5/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(20,), learning_rate=constant, solver=sgd
+[CV 9/10; 5/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(20,), learning_rate=constant, solver=sgd
+[CV 10/10; 5/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(20,), learning_rate=constant, solver=sgd
+[CV 1/10; 6/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(20,), learning_rate=constant, solver=adam
+[CV 2/10; 6/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(20,), learning_rate=constant, solver=adam
+[CV 3/10; 6/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(20,), learning_rate=constant, solver=adam
+[CV 4/10; 6/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(20,), learning_rate=constant, solver=adam
+[CV 5/10; 6/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(20,), learning_rate=constant, solver=adam
+[CV 6/10; 6/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(20,), learning_rate=constant, solver=adam
+[CV 7/10; 5/32] END activation=tanh, alpha=0.0001, hidden_layer_sizes=(20,), learning_rate=constant, solver=sgd;, score=0.882 total time= 3.2min
+[CV 7/10; 6/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(20,), learning_rate=constant, solver=adam
+[CV 6/10; 5/32] END activation=tanh, alpha=0.0001, hidden_layer_sizes=(20,), learning_rate=constant, solver=sgd;, score=0.854 total time= 5.4min
+[CV 8/10; 6/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(20,), learning_rate=constant, solver=adam
+[CV 5/10; 5/32] END activation=tanh, alpha=0.0001, hidden_layer_sizes=(20,), learning_rate=constant, solver=sgd;, score=0.868 total time= 6.1min
+[CV 9/10; 6/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(20,), learning_rate=constant, solver=adam
+[CV 1/10; 1/32] END activation=tanh, alpha=0.0001, hidden_layer_sizes=(10, 30, 10), learning_rate=constant, solver=sgd;, score=0.841 total time= 6.5min
+[CV 10/10; 6/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(20,), learning_rate=constant, solver=adam
+[CV 4/10; 1/32] END activation=tanh, alpha=0.0001, hidden_layer_sizes=(10, 30, 10), learning_rate=constant, solver=sgd;, score=0.643 total time= 7.9min
+[CV 1/10; 7/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(20,), learning_rate=adaptive, solver=sgd
+[CV 2/10; 6/32] END activation=tanh, alpha=0.0001, hidden_layer_sizes=(20,), learning_rate=constant, solver=adam;, score=0.936 total time= 7.9min
+[CV 2/10; 7/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(20,), learning_rate=adaptive, solver=sgd
+[CV 3/10; 5/32] END activation=tanh, alpha=0.0001, hidden_layer_sizes=(20,), learning_rate=constant, solver=sgd;, score=0.907 total time= 8.3min
+[CV 3/10; 7/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(20,), learning_rate=adaptive, solver=sgd
+[CV 8/10; 5/32] END activation=tanh, alpha=0.0001, hidden_layer_sizes=(20,), learning_rate=constant, solver=sgd;, score=0.866 total time= 8.5min
+[CV 4/10; 7/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(20,), learning_rate=adaptive, solver=sgd
+[CV 1/10; 6/32] END activation=tanh, alpha=0.0001, hidden_layer_sizes=(20,), learning_rate=constant, solver=adam;, score=0.935 total time= 9.1min
+[CV 5/10; 7/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(20,), learning_rate=adaptive, solver=sgd
+[CV 3/10; 6/32] END activation=tanh, alpha=0.0001, hidden_layer_sizes=(20,), learning_rate=constant, solver=adam;, score=0.905 total time= 9.3min
+[CV 6/10; 7/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(20,), learning_rate=adaptive, solver=sgd
+[CV 5/10; 4/32] END activation=tanh, alpha=0.0001, hidden_layer_sizes=(10, 30, 10), learning_rate=adaptive, solver=adam;, score=0.831 total time= 9.3min
+[CV 7/10; 7/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(20,), learning_rate=adaptive, solver=sgd
+[CV 8/10; 1/32] END activation=tanh, alpha=0.0001, hidden_layer_sizes=(10, 30, 10), learning_rate=constant, solver=sgd;, score=0.866 total time= 9.7min
+[CV 8/10; 7/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(20,), learning_rate=adaptive, solver=sgd
+[CV 10/10; 3/32] END activation=tanh, alpha=0.0001, hidden_layer_sizes=(10, 30, 10), learning_rate=adaptive, solver=sgd;, score=0.843 total time= 9.7min
+[CV 9/10; 7/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(20,), learning_rate=adaptive, solver=sgd
+[CV 9/10; 5/32] END activation=tanh, alpha=0.0001, hidden_layer_sizes=(20,), learning_rate=constant, solver=sgd;, score=0.886 total time= 9.7min
+[CV 10/10; 7/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(20,), learning_rate=adaptive, solver=sgd
+[CV 2/10; 5/32] END activation=tanh, alpha=0.0001, hidden_layer_sizes=(20,), learning_rate=constant, solver=sgd;, score=0.921 total time= 9.9min
+[CV 1/10; 8/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(20,), learning_rate=adaptive, solver=adam
+[CV 4/10; 5/32] END activation=tanh, alpha=0.0001, hidden_layer_sizes=(20,), learning_rate=constant, solver=sgd;, score=0.902 total time=10.0min
+[CV 2/10; 8/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(20,), learning_rate=adaptive, solver=adam
+[CV 4/10; 6/32] END activation=tanh, alpha=0.0001, hidden_layer_sizes=(20,), learning_rate=constant, solver=adam;, score=0.935 total time=10.1min
+[CV 3/10; 8/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(20,), learning_rate=adaptive, solver=adam
+[CV 6/10; 6/32] END activation=tanh, alpha=0.0001, hidden_layer_sizes=(20,), learning_rate=constant, solver=adam;, score=0.950 total time=10.2min
+[CV 4/10; 8/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(20,), learning_rate=adaptive, solver=adam
+[CV 5/10; 6/32] END activation=tanh, alpha=0.0001, hidden_layer_sizes=(20,), learning_rate=constant, solver=adam;, score=0.912 total time=10.2min
+[CV 5/10; 8/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(20,), learning_rate=adaptive, solver=adam
+[CV 1/10; 5/32] END activation=tanh, alpha=0.0001, hidden_layer_sizes=(20,), learning_rate=constant, solver=sgd;, score=0.887 total time=10.3min
+[CV 6/10; 8/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(20,), learning_rate=adaptive, solver=adam
+[CV 6/10; 4/32] END activation=tanh, alpha=0.0001, hidden_layer_sizes=(10, 30, 10), learning_rate=adaptive, solver=adam;, score=0.832 total time=10.4min
+[CV 7/10; 8/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(20,), learning_rate=adaptive, solver=adam
+[CV 10/10; 5/32] END activation=tanh, alpha=0.0001, hidden_layer_sizes=(20,), learning_rate=constant, solver=sgd;, score=0.912 total time=10.5min
+[CV 8/10; 8/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(20,), learning_rate=adaptive, solver=adam
+[CV 9/10; 1/32] END activation=tanh, alpha=0.0001, hidden_layer_sizes=(10, 30, 10), learning_rate=constant, solver=sgd;, score=0.831 total time=11.5min
+[CV 9/10; 8/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(20,), learning_rate=adaptive, solver=adam
+[CV 2/10; 4/32] END activation=tanh, alpha=0.0001, hidden_layer_sizes=(10, 30, 10), learning_rate=adaptive, solver=adam;, score=0.907 total time=11.7min
+[CV 10/10; 8/32] START activation=tanh, alpha=0.0001, hidden_layer_sizes=(20,), learning_rate=adaptive, solver=adam
+[CV 10/10; 4/32] END activation=tanh, alpha=0.0001, hidden_layer_sizes=(10, 30, 10), learning_rate=adaptive, solver=adam;, score=0.881 total time=11.9min
+[CV 1/10; 9/32] START activation=tanh, alpha=0.05, hidden_layer_sizes=(10, 30, 10), learning_rate=constant, solver=sgd
+[CV 9/10; 6/32] END activation=tanh, alpha=0.0001, hidden_layer_sizes=(20,), learning_rate=constant, solver=adam;, score=0.905 total time= 6.2min
+[CV 2/10; 9/32] START activation=tanh, alpha=0.05, hidden_layer_sizes=(10, 30, 10), learning_rate=constant, solver=sgd
+[CV 3/10; 2/32] END activation=tanh, alpha=0.0001, hidden_layer_sizes=(10, 30, 10), learning_rate=constant, solver=adam;, score=0.942 total time=12.5min
+[CV 3/10; 9/32] START activation=tanh, alpha=0.05, hidden_layer_sizes=(10, 30, 10), learning_rate=constant, solver=sgd
+[CV 3/10; 1/32] END activation=tanh, alpha=0.0001, hidden_layer_sizes=(10, 30, 10), learning_rate=constant, solver=sgd;, score=0.638 total time=12.7min
+[CV 4/10; 9/32] START activation=tanh, alpha=0.05, hidden_layer_sizes=(10, 30, 10), learning_rate=constant, solver=sgd
+[CV 4/10; 7/32] END activation=tanh, alpha=0.0001, hidden_layer_sizes=(20,), learning_rate=adaptive, solver=sgd;, score=0.878 total time= 4.3min
+[CV 5/10; 9/32] START activation=tanh, alpha=0.05, hidden_layer_sizes=(10, 30, 10), learning_rate=constant, solver=sgd
+[CV 4/10; 2/32] END activation=tanh, alpha=0.0001, hidden_layer_sizes=(10, 30, 10), learning_rate=constant, solver=adam;, score=0.883 total time=12.9min
+[CV 6/10; 9/32] START activation=tanh, alpha=0.05, hidden_layer_sizes=(10, 30, 10), learning_rate=constant, solver=sgd
+[CV 7/10; 4/32] END activation=tanh, alpha=0.0001, hidden_layer_sizes=(10, 30, 10), learning_rate=adaptive, solver=adam;, score=0.862 total time=13.8min
+[CV 7/10; 9/32] START activation=tanh, alpha=0.05, hidden_layer_sizes=(10, 30, 10), learning_rate=constant, solver=sgd
+[CV 7/10; 6/32] END activation=tanh, alpha=0.0001, hidden_layer_sizes=(20,), learning_rate=constant, solver=adam;, score=0.907 total time=10.6min
+[CV 8/10; 9/32] START activation=tanh, alpha=0.05, hidden_layer_sizes=(10, 30, 10), learning_rate=constant, solver=sgd

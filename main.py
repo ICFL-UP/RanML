@@ -337,11 +337,11 @@ def main():
         c = 0
         for x in MODEL_LIST:
             try:
-                
-                ConfusionMatrixDisplay.from_estimator(
-                    models[x + "_" + prefix], X["VAL"], Y["VAL"], ax=axis[r, c], colorbar=False, display_labels=["B", "R"]
-                )
                 axis[r, c].set_title(x)
+                pred = models[x + "_" + prefix].predict(X["VAL"])
+                # print(pred)
+                ConfusionMatrixDisplay.from_predictions(Y["VAL"], pred, ax=axis[r, c], colorbar=False, display_labels=["B", "R"])
+                
                 c += 1
                 if c == 4:
                     r += 1

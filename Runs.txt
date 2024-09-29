@@ -16,9 +16,11 @@ python3.10 main.py -s -t -i Datasets/PSM_60_Ransomware_Detection_Using_Strings.c
 python3.10 main.py -s -t -i Datasets/ACFM_7_API_statistics_of_Ransomware_versioned.csv --smote | tee ACFMSMOTE.out &
 python3.10 main.py -s -t -i Datasets/PEEM_5_Entropy_of_PE_Sections_versioned.csv --smote | tee PEEMSMOTE.out &
 python3.10 main.py -s -t -i Datasets/PEIM_22_Ransomware_Detection_Using_Features_of_PE_Imports_2.csv --smote | tee PEIMSMOTE.out &
-python3.10 main.py -s -t -i Datasets/PMM_9_Process_Memory_of_Ransomware_versioned\ \(1\).csv --smote | tee PMMSMOTE.out &
 python3.10 main.py -s -t -i Datasets/FOM_47_File_Operations_for_Ransomware_Detection.csv --smote | tee FOMSMOTE.out &
-python3.10 main.py -s -t -i Datasets/ROM_49_Registry_operations_for_Ransomware_Detection.csv --smote | tee ROMSMOTE.out &
+python3.10 main.py -s -t -i Datasets/ROM_49_Registry_operations_for_Ransomware_Detection.csv --smote -m BAG| tee -a ROMSMOTE.out &
+
+
+python3.10 main.py -s -t -i Datasets/PMM_9_Process_Memory_of_Ransomware_versioned\ \(1\).csv --smote -m NN,SVM,KM,BAG| tee -a PMMSMOTE.out &
 
 
 
@@ -47,14 +49,23 @@ python3.10 main.py -s -p -i Datasets/PSM_60_Ransomware_Detection_Using_Strings.c
 
 CM
 ___________
-python3.10 main.py -s -c -i Datasets/ACFM_7_API_statistics_of_Ransomware_versioned.csv | tee -a ACFM.out &
-python3.10 main.py -s -c -i Datasets/PEEM_5_Entropy_of_PE_Sections_versioned.csv | tee -a PEEM.out &
-python3.10 main.py -s -c -i Datasets/PEIM_22_Ransomware_Detection_Using_Features_of_PE_Imports_2.csv | tee -a PEIM.out &
-python3.10 main.py -s -c -i Datasets/PMM_9_Process_Memory_of_Ransomware_versioned\ \(1\).csv  | tee -a PMM.out &
-python3.10 main.py -s -c -i Datasets/FOM_47_File_Operations_for_Ransomware_Detection.csv | tee -a FOM.out &
-python3.10 main.py -s -c -i Datasets/ROM_49_Registry_operations_for_Ransomware_Detection.csv | tee -a ROM.out &
+python3.10 main.py -s -c -i Datasets/ACFM_7_API_statistics_of_Ransomware_versioned.csv &
+python3.10 main.py -s -c -i Datasets/PEEM_5_Entropy_of_PE_Sections_versioned.csv  &
+python3.10 main.py -s -c -i Datasets/PEIM_22_Ransomware_Detection_Using_Features_of_PE_Imports_2.csv  &
+python3.10 main.py -s -c -i Datasets/PMM_9_Process_Memory_of_Ransomware_versioned\ \(1\).csv  &
+python3.10 main.py -s -c -i Datasets/FOM_47_File_Operations_for_Ransomware_Detection.csv &
+python3.10 main.py -s -c -i Datasets/ROM_49_Registry_operations_for_Ransomware_Detection.csv &
 
+python3.10 main.py -s -c -i Datasets/ACFM_7_API_statistics_of_Ransomware_versioned.csv --smote &
+python3.10 main.py -s -c -i Datasets/PEEM_5_Entropy_of_PE_Sections_versioned.csv  --smote &
+python3.10 main.py -s -c -i Datasets/PEIM_22_Ransomware_Detection_Using_Features_of_PE_Imports_2.csv --smote  &
+python3.10 main.py -s -c -i Datasets/PMM_9_Process_Memory_of_Ransomware_versioned\ \(1\).csv  --smote &
+python3.10 main.py -s -c -i Datasets/FOM_47_File_Operations_for_Ransomware_Detection.csv --smote &
+python3.10 main.py -s -c -i Datasets/ROM_49_Registry_operations_for_Ransomware_Detection.csv --smote &
 
+python3.10 main.py -s -c -i Datasets/PSM_60_Ransomware_Detection_Using_Strings.csv --tfidf &
+python3.10 main.py -s -c -i Datasets/PSM_60_Ransomware_Detection_Using_Strings.csv --bow &
+python3.10 main.py -s -c -i Datasets/PSM_60_Ransomware_Detection_Using_Strings.csv --doc2vec &
 
 ROC
 ___________

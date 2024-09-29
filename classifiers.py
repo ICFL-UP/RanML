@@ -350,7 +350,7 @@ def kmeans(train_data, correct_class, nlp):
         classifier = KMeans()
 
         param = {
-            "n_clusters": [2, 3, 5],
+            "n_clusters": [2],
             "init": ["k-means++", "random"],
             "n_init": [5, 10, 15],
             "max_iter": [100, 200, 300, 400, 500],
