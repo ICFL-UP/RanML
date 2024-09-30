@@ -292,8 +292,9 @@ def main():
         axes.set_title(prefix)
         for x in MODEL_LIST:
             try:
-                RocCurveDisplay.from_estimator(
-                    models[x + "_" + prefix], X["VAL"], Y["VAL"], ax=axes
+                pred = models[x + "_" + prefix].predict(X["VAL"])
+                RocCurveDisplay.from_predictions(
+                    Y["VAL"], pred, ax=axes, name=x
                 )
             except Exception:
                 log.log("Failed to generate ROC for " + x)
@@ -338,7 +339,9 @@ def main():
         for x in MODEL_LIST:
             try:
                 axis[r, c].set_title(x)
+
                 pred = models[x + "_" + prefix].predict(X["VAL"])
+
                 # print(pred)
                 ConfusionMatrixDisplay.from_predictions(Y["VAL"], pred, ax=axis[r, c], colorbar=False, display_labels=["B", "R"])
                 
@@ -354,7 +357,7 @@ def main():
                     c = 0
             
                 print(e)
-                log.log("\n\nFailed to generate CM for " + mdl + " " + prefix)
+                log.log("\n\nFailed to generate CM for " + x + " " + prefix)
                 continue
         figure.suptitle(prefix + " Confusion Matrices")
         figure.tight_layout()
