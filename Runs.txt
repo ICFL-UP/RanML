@@ -21,7 +21,7 @@ python3.10 main.py -s -t -i Datasets/ROM_49_Registry_operations_for_Ransomware_D
 
 
 python3.10 main.py -s -t -i Datasets/PMM_9_Process_Memory_of_Ransomware_versioned\ \(1\).csv --smote -m NN,SVM,KM,BAG| tee -a PMMSMOTE.out &
-
+python3.10 main.py -s -t -i Datasets/PMM_9_Process_Memory_of_Ransomware_versioned\ \(1\).csv --smote -m NN | tee -a PMMSMOTE.out &
 
 
 PREDICT
